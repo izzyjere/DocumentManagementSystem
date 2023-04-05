@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace RTSADocs.Shared.DTOs
 {
-    internal class DocumentOwnerDTO
+    public class DocumentOwnerDTO
     {
     }
 }
