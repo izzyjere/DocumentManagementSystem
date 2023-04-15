@@ -8,5 +8,6 @@ namespace RTSADocs.Shared.Constants
 {
     public class ApiEndpoints
     {
+        public const string FileStore = "/api/filestore";
     }
 }
