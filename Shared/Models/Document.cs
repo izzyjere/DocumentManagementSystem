@@ -11,6 +11,7 @@ namespace RTSADocs.Shared.Models
         public bool IsConfidential { get; set; }
         public string Status { get; set; } = Constants.Status.CREATE;
         public DateTime SubmittedOn { get; set; }
+        public string Code { get; set; }
         public Guid LibraryId { get; set; }
         public Library Library { get; set; }
         public ICollection<PageFile> Pages { get; set; }
