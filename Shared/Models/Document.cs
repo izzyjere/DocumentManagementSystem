@@ -1,6 +1,8 @@
 ﻿global using RTSADocs.Shared.Contracts;
 using RTSADocs.Shared.Constants;
 
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace RTSADocs.Shared.Models
 {
     public class Document : AuditableEntity
@@ -13,6 +15,9 @@ namespace RTSADocs.Shared.Models
         public DateTime SubmittedOn { get; set; }
         public string Code { get; set; }
         public Guid LibraryId { get; set; }
+        public Guid SourceId { get; set; }
+        [ForeignKey(nameof(SourceId))]
+        public DocumentSource Source { get; set; }
         public Library Library { get; set; }
         public ICollection<PageFile> Pages { get; set; }
 

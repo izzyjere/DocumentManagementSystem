@@ -7,5 +7,6 @@
         public string Path { get; set; }
         public Cabinet Cabinet { get; set;}
         public string Code { get; set; }
+        public List<Document> Documents { get; set; }
     }
 }
