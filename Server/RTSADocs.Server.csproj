@@ -15,6 +15,6 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Client\RTSADocs.Client.csproj" />
-    <ProjectReference Include="..\Shared\RTSADocs.Shared.csproj" />
+    <ProjectReference Include="..\Data\RTSADocs.Data\RTSADocs.Data.csproj" />
   </ItemGroup>
 </Project>
