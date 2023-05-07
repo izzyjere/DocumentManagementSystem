@@ -1,12 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using RTSADocs.Shared.Contracts;
 
 namespace RTSADocs.Data.Services
 {
-    internal class ICrudService
+    internal interface ICrudService<TModel> where TModel : class, IEntity
     {
+        IQueryable<TModel> GetAll();
+        TModel GetById(Guid id);
+        bool Save(TModel model);
+        bool Delete(Guid id);
+        bool Update(TModel model);
     }
 }
