@@ -1,4 +1,7 @@
 ﻿global using RTSADocs.Shared.Models;
+
+using Microsoft.EntityFrameworkCore;
+
 using RTSADocs.Data.DataAccess;
 using RTSADocs.Shared.Contracts;
 
@@ -15,7 +18,6 @@ namespace RTSADocs.Data.Services
             return GetAll().Where(d => d.Code.Contains(query)||
                                              d.Description.Contains(query)||
                                              d.Source.Name.Contains(query)||
-                                             d.Source.Description.Contains(query)); 
-        }
+                                             d.Source.Description.Contains(query));         }
     }
 }
