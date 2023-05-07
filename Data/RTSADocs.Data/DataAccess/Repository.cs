@@ -6,7 +6,7 @@ using RTSADocs.Shared.Contracts;
 
 namespace RTSADocs.Data.DataAccess
 {
-    public class Repository<TModel> : IRepository<TModel> where TModel : class, IEntity
+    internal class Repository<TModel> : IRepository<TModel> where TModel : class, IEntity
     {
         private readonly DbContext database;
         public Repository(DbContext database)
@@ -33,7 +33,14 @@ namespace RTSADocs.Data.DataAccess
 
         public int Save(TModel model)
         {
-            database.Set<TModel>().Add(model);
+            if(model.Id != Guid.Empty)
+            {
+                database.Set<TModel>().Update(model);
+            }
+            else
+            {
+                database.Set<TModel>().Add(model);
+            }             
             return database.SaveChanges();
         }
     }
