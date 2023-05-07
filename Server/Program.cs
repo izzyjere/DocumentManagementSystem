@@ -9,11 +9,13 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")?? throw new ArgumentNullException($"No connection string DefaultConnection has been configured in appsettings.json");
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
-builder.Services.AddAuthentication(NegotiateDefaults.AuthenticationScheme).AddNegotiate();
 builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 builder.Services.AddDataAccess(connectionString);
+builder.Services.AddAuthentication(NegotiateDefaults.AuthenticationScheme).AddNegotiate();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

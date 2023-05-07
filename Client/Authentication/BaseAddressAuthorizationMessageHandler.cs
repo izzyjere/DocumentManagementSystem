@@ -6,12 +6,12 @@ using System.Net.Http.Headers;
 
 namespace RTSADocs.Client.Authentication
 {
-    public class BaseAddressAuthorizationMessageHandler : DelegatingHandler
+    public class CustomAuthorizationMessageHandler : DelegatingHandler
     {
 
         private readonly IAccessTokenProvider _provider;
 
-        public BaseAddressAuthorizationMessageHandler(IAccessTokenProvider provider)
+        public CustomAuthorizationMessageHandler(IAccessTokenProvider provider)
         {
             _provider = provider;
         }
@@ -19,9 +19,14 @@ namespace RTSADocs.Client.Authentication
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
             var tokenResult = await _provider.RequestAccessToken();
-            if (tokenResult.TryGetToken(out var token))
+            if (tokenResult.Status == AccessTokenResultStatus.Success)
             {
+                tokenResult.TryGetToken(out var token);
                 request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token.Value);
+            }
+            else
+            {
+                request.Headers.Authorization = null;
             }
             return await base.SendAsync(request, cancellationToken);
         }

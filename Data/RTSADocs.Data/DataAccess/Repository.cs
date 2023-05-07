@@ -8,8 +8,8 @@ namespace RTSADocs.Data.DataAccess
 {
     internal class Repository<TModel> : IRepository<TModel> where TModel : class, IEntity
     {
-        private readonly DbContext database;
-        public Repository(DbContext database)
+        private readonly DatabaseContext database;
+        public Repository(DatabaseContext database)
         {
             this.database = database;
         }

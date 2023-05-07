@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Components.Authorization;
+
 using System.Security.Claims;
 
 namespace RTSADocs.Client.Authentication

@@ -6,8 +6,8 @@ namespace RTSADocs.Server
 {
     internal class CurrentUserService : ICurrentUserService
     {
-        private HttpContextAccessor contextAccessor;
-        public CurrentUserService(HttpContextAccessor contextAccessor)
+        private IHttpContextAccessor contextAccessor;
+        public CurrentUserService(IHttpContextAccessor contextAccessor)
         {
               this.contextAccessor = contextAccessor;
         }
