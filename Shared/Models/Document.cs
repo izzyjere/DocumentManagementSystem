@@ -19,7 +19,7 @@ namespace RTSADocs.Shared.Models
         [ForeignKey(nameof(SourceId))]
         public DocumentSource Source { get; set; }
         public Library Library { get; set; }
-        public ICollection<PageFile> Pages { get; set; }
+        public List<PageFile> Pages { get; set; }
 
     }
 }

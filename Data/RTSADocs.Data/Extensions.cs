@@ -42,6 +42,7 @@ namespace RTSADocs.Data
         }
         public static IServiceCollection AddDataAccess(this IServiceCollection services, string connectionString)
         {
+   
             services.AddDbContext<DatabaseContext>(options =>
             {
                 options.UseSqlServer(connectionString, sqlOptions =>

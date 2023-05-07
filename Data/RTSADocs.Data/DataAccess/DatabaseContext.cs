@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
+using RTSADocs.Data.Services;
 using RTSADocs.Shared.Contracts;
 
 using System;
@@ -13,8 +14,33 @@ namespace RTSADocs.Data.DataAccess
 {
     public class DatabaseContext   : DbContext
     {
-        public DatabaseContext(DbContextOptions<DatabaseContext> options) : base(options) { }
-
+        public ICurrentUserService currentUserService;
+        public DatabaseContext(DbContextOptions<DatabaseContext> options, ICurrentUserService currentUserService) : base(options) { 
+                     this.currentUserService = currentUserService;
+        }
+        public override int SaveChanges()
+        {
+            foreach (var entry in ChangeTracker.Entries<AuditableEntity>().ToList())
+            {
+                var userName = currentUserService .GetUserName();
+                switch (entry.State)
+                {
+                    case EntityState.Added:
+                        entry.Entity.CreatedOn = DateTime.Now;
+                        entry.Entity.CreatedBy ??= userName;
+                        break;
+                    case EntityState.Modified:
+                        entry.Property(e => e.CreatedBy).IsModified = false;
+                        entry.Property(e => e.CreatedOn).IsModified = false;
+                        entry.Entity.LastModifiedOn = DateTime.UtcNow;
+                        entry.Entity.LastModifiedBy ??= currentUserService.GetUserName();
+                        break;
+                    default:
+                        break;
+                }
+            }
+            return base.SaveChanges();
+        }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             var entityTypes = Assembly.GetExecutingAssembly().GetTypes()
