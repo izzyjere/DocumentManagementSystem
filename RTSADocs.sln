@@ -3,13 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.5.33103.201
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RTSADocs.Client", "Client\RTSADocs.Client.csproj", "{A021AF7B-73EF-4ABF-BA6C-A933160FE298}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RTSADocs.Server", "Server\RTSADocs.Server.csproj", "{A77C1919-012C-494F-BF68-C2FE599E24B2}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RTSADocs.Shared", "Shared\RTSADocs.Shared.csproj", "{7314533C-FB2A-450F-B362-E3E9EDF0BC43}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RTSADocs.Data", "Data\RTSADocs.Data\RTSADocs.Data.csproj", "{F6769A00-167E-40BE-B5C8-175609C145FF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RTSADocs.Data", "Data\RTSADocs.Data\RTSADocs.Data.csproj", "{F6769A00-167E-40BE-B5C8-175609C145FF}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RTSADocs", "Web\RTSADocs.csproj", "{7D9433E1-D951-4617-8B8A-913C35993499}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,14 +15,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{A021AF7B-73EF-4ABF-BA6C-A933160FE298}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A021AF7B-73EF-4ABF-BA6C-A933160FE298}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A021AF7B-73EF-4ABF-BA6C-A933160FE298}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A021AF7B-73EF-4ABF-BA6C-A933160FE298}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A77C1919-012C-494F-BF68-C2FE599E24B2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A77C1919-012C-494F-BF68-C2FE599E24B2}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A77C1919-012C-494F-BF68-C2FE599E24B2}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A77C1919-012C-494F-BF68-C2FE599E24B2}.Release|Any CPU.Build.0 = Release|Any CPU
 		{7314533C-FB2A-450F-B362-E3E9EDF0BC43}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{7314533C-FB2A-450F-B362-E3E9EDF0BC43}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7314533C-FB2A-450F-B362-E3E9EDF0BC43}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -33,6 +23,10 @@ Global
 		{F6769A00-167E-40BE-B5C8-175609C145FF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F6769A00-167E-40BE-B5C8-175609C145FF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F6769A00-167E-40BE-B5C8-175609C145FF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7D9433E1-D951-4617-8B8A-913C35993499}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7D9433E1-D951-4617-8B8A-913C35993499}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7D9433E1-D951-4617-8B8A-913C35993499}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7D9433E1-D951-4617-8B8A-913C35993499}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

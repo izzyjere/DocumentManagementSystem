@@ -1,0 +1,18 @@
+﻿@using System.Net.Http
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.AspNetCore.Components.Routing
+@using Microsoft.AspNetCore.Components.Web
+@using Microsoft.AspNetCore.Components.Web.Virtualization
+@using Microsoft.JSInterop
+@using MudBlazor
+@using RTSADocs
+@using RTSADocs.Shared
+@using SimpleAuthentication
+
+@inject IJSRuntime JavaScriptRuntime
+
+@inject IUserService userService
+@inject IRoleService roleService
+@inject IAuthenticationService authenticationService
