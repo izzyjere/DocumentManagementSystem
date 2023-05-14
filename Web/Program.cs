@@ -4,6 +4,9 @@ using Microsoft.EntityFrameworkCore;
 using MudBlazor.Services;
 
 using RTSADocs.Authentication;
+using RTSADocs.Data;
+using RTSADocs.Data.Services;
+
 using SimpleAuthentication;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -16,6 +19,9 @@ builder.Services.AddSimpleAuthentication(userStoreOptions =>
 {
     userStoreOptions.UseSqlServer(connectionString);
 });
+builder.Services.AddTransient<ICurrentUserService,CurrentUserService>();
+builder.Services.AddDataAccess(connectionString);
+
 builder.Services.AddScoped<AuthenticationStateProvider,CustomAuthenticationStateProvider>();
 var app = builder.Build();
 

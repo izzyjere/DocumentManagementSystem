@@ -1,14 +1,20 @@
-﻿<MudCard Elevation="0" Square="true" Class="@Class" Style="@Style">
-    <MudCardHeader>
-        <CardHeaderAvatar>
-            <MudAvatar Image="images/avatar_jonny.jpg" />
-        </CardHeaderAvatar>
-        <CardHeaderContent>
-            <MudText Typo="Typo.body2">Jonny Larsson</MudText>
-            <MudText Typo="Typo.caption">IT Consultant</MudText>
-        </CardHeaderContent>
-    </MudCardHeader>
-</MudCard>
+﻿<AuthorizeView>
+    <Authorized>
+        <MudCard Elevation="0" Square="true" Class="@Class" Style="@Style">
+            <MudCardHeader>
+                <CardHeaderAvatar>
+                    <MudAvatar>
+                        <MudIcon Size="Size.Large" Icon="@Icons.Material.Filled.AccountCircle"></MudIcon>
+                    </MudAvatar>
+                </CardHeaderAvatar>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.body2">@(context?.User?.Identity?.Name??"Anonymous")</MudText>
+                    <MudText Typo="Typo.caption">@context.User.FindFirst(ClaimTypes.Role)</MudText>
+                </CardHeaderContent>
+            </MudCardHeader>
+        </MudCard>
+    </Authorized>
+</AuthorizeView>
 
 @code {
     [Parameter] public string Class { get; set; }

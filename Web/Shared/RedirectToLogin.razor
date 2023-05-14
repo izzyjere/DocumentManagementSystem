@@ -1,0 +1,30 @@
+﻿@inject NavigationManager Navigation
+<AuthorizeView Context="aContext">
+    <NotAuthorized>
+        <ErrorBoundary>
+            <ChildContent>
+                @{
+                    var hasJSRuntime = Navigation != null && (Navigation.GetType()?.GetProperty("HasAttachedJSRuntime") != null ?
+                    (bool)Navigation.GetType().GetProperty("HasAttachedJSRuntime").GetValue(Navigation) : true);
+
+                    if (hasJSRuntime)
+                    {
+
+                        Navigation.NavigateTo("/login");
+                    }
+
+                }
+
+            </ChildContent>
+
+            <ErrorContent>
+                <MudAlert ShowCloseIcon="true" Variant="Variant.Filled" Severity="Severity.Error" Icon="@Icons.Material.Filled.Error">🤕 Sorry! An error occured at our end. <a href="/login">Login Instead</a></MudAlert>
+            </ErrorContent>
+        </ErrorBoundary>
+        <PageTitle>Unauthorized</PageTitle>
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+
+}

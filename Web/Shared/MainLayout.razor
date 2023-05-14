@@ -4,11 +4,11 @@
 <MudThemeProvider Theme="_theme" />
 <MudDialogProvider />
 <MudSnackbarProvider />
-
+<RedirectToLogin/>
 <MudLayout>
-    <MudAppBar Elevation="25">
+    <MudAppBar Style="background-color:white; color:black" Elevation="25">
         <MudHidden Breakpoint="Breakpoint.SmAndDown">
-            <MudIcon Icon="@Icons.Custom.Brands.MudBlazor" Size="Size.Large" />
+           <MudImage Width="60" Height="60" Src="images/logo.png"></MudImage>
         </MudHidden>
         <MudHidden Breakpoint="Breakpoint.MdAndUp">
             <MudIconButton Icon="@Icons.Material.Outlined.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
@@ -19,19 +19,12 @@
         <MudHidden Breakpoint="Breakpoint.Xs" Invert="true">
             <MudText Typo="Typo.subtitle2">RTSADocs</MudText>
         </MudHidden>
-        <MudSpacer />
-        <MudMenu Icon="@Icons.Material.Outlined.Translate" Color="Color.Inherit" Direction="Direction.Bottom" OffsetY="true" Dense="true">
-            <MudMenuItem>English</MudMenuItem>
-            <MudMenuItem>Swedish</MudMenuItem>
-            <MudMenuItem>Old Norse</MudMenuItem>
-        </MudMenu>
-        <MudMenu Icon="@Icons.Material.Outlined.Widgets" Color="Color.Inherit" Direction="Direction.Bottom" OffsetY="true" Dense="true">
-            <MudMenuItem Link="https://mudblazor.com/">MudBlazor</MudMenuItem>
-            <MudMenuItem Link="https://github.com/Garderoben/RTSADocss">Source Code</MudMenuItem>
-        </MudMenu>
-        <MudMenu Direction="Direction.Left" OffsetX="true" Dense="true" Class="mt-1 ml-4">
+        <MudSpacer />             
+        <MudMenu Dense="true" Class="mt-1 ml-4">
             <ActivatorContent>
-                <MudAvatar Image="images/avatar_jonny.jpg" />
+                <MudAvatar>
+                    <MudIcon Size="Size.Large" Icon="@Icons.Material.Filled.AccountCircle"></MudIcon>
+                </MudAvatar>
             </ActivatorContent>
             <ChildContent>
                 <PersonCard Class="mt-n2" />
