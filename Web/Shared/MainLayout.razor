@@ -44,11 +44,9 @@
         <MudHidden Breakpoint="Breakpoint.SmAndDown">
             <MudToolBar DisableGutters="true">
                 <MudIconButton Icon="@Icons.Material.Outlined.Menu" Color="Color.Inherit" OnClick="@((e) => DrawerToggle())" Class="ml-3" />
-                <MudBreadcrumbs Items="_items"></MudBreadcrumbs>
+                <MudBreadcrumbs Items="LayoutService.Breadcrumbs"></MudBreadcrumbs>
                 <MudSpacer />
-                <MudButton Variant="Variant.Text" Link="https://mudblazor.com/" Style="color:#594AE2;">MudBlazor</MudButton>
-                <MudButton Variant="Variant.Text" Link="https://github.com/Garderoben/RTSADocss" Style="color:#424242;" Class="mr-3">Source Code</MudButton>
-            </MudToolBar>
+           </MudToolBar>
         </MudHidden>
         <MudContainer MaxWidth="MaxWidth.False" Class="mt-4">
             @Body
@@ -72,9 +70,4 @@
         StateHasChanged();
     }
 
-    private List<BreadcrumbItem> _items = new List<BreadcrumbItem>
-    {
-        new BreadcrumbItem("Personal", href: "#"),
-        new BreadcrumbItem("Dashboard", href: "#"),
-    };
 }
