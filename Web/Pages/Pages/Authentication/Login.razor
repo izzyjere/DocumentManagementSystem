@@ -3,26 +3,22 @@
 @layout LoginLayout
 
 
+<EditForm Model="Model" OnValidSubmit="LoginAsync">
+    <DataAnnotationsValidator />
+    <MudText Typo="Typo.h4" GutterBottom="true">Sign In</MudText>
 
+    <MudTextField For="()=>Model.UserName" @bind-Value="Model.UserName" T="string" Label="E-mail" Variant="Variant.Outlined" Class="my-6"></MudTextField>
 
-<MudText Typo="Typo.h4" GutterBottom="true">Sign In</MudText>
+    <MudTextField For="()=>Model.Password" @bind-Value="Model.Password" Label="Password" Variant="Variant.Outlined" InputType="@PasswordInput" Adornment="Adornment.End" AdornmentIcon="@PasswordInputIcon" OnAdornmentClick="TogglePasswordVisibility" />
 
-<MudText>Don't have an account? <MudLink Href="/pages/authentication/register">Sign Up</MudLink></MudText>
-
-<MudTextField T="string" Value="@("staff@mudblazor.com")" Label="E-mail" Variant="Variant.Outlined" Class="my-6"></MudTextField>
-
-<MudTextField @bind-Value="@Password" Label="Password" Variant="Variant.Outlined" InputType="@PasswordInput" Adornment="Adornment.End" AdornmentIcon="@PasswordInputIcon" OnAdornmentClick="TogglePasswordVisibility" />
-
-<div Class="d-flex justify-space-between align-center">
-    <MudCheckBox T="bool" Label="Remember me?" Color="Color.Primary" Class="ml-n1 my-3"></MudCheckBox>
-    <MudLink Href="/pages/authentication/forgot-password">Forgot pwd?</MudLink>
-</div>
-
-
-<MudButton Variant="Variant.Filled" Color="Color.Primary" Link="/personal/dashboard" Size="Size.Large" FullWidth="true">Sign In</MudButton>
-
+    <div Class="d-flex justify-space-between align-center">
+        <MudCheckBox @bind-Checked="Model.RememberMe" T="bool" Label="Remember me?" Color="Color.Primary" Class="ml-n1 my-3"></MudCheckBox>
+        <MudLink Href="/forgot-password">Forgot pwd?</MudLink>
+    </div>
+    <MudButton Variant="Variant.Filled" Color="Color.Primary" ButtonType="ButtonType.Submit" Size="Size.Large" FullWidth="true">Sign In</MudButton>
+</EditForm>
 @code {
-    string Password { get; set; } = "BMWvBPJXZu";
+    LoginRequest Model = new();
 
     bool PasswordVisibility;
     InputType PasswordInput = InputType.Password;
@@ -41,6 +37,19 @@
             PasswordVisibility = true;
             PasswordInputIcon = Icons.Material.Filled.Visibility;
             PasswordInput = InputType.Text;
+        }
+    }
+    async Task LoginAsync()
+    {
+        Model.ReturnUrl="dashboard";
+        var result = await authenticationService.LoginAsync(Model);
+        if (!result.Succeeded)
+        {
+            snackBar.Add(result.Message, Severity.Error);
+        }
+        else
+        {
+            NavManager.NavigateTo($"/login?key={result.Key}", true);
         }
     }
 }

@@ -9,7 +9,7 @@
                 </CardHeaderAvatar>
                 <CardHeaderContent>
                     <MudText Typo="Typo.body2">@(context?.User?.Identity?.Name??"Anonymous")</MudText>
-                    <MudText Typo="Typo.caption">@context.User.FindFirst(ClaimTypes.Role)</MudText>
+                    <MudText Typo="Typo.caption">@context.User.FindFirst(ClaimTypes.Role).Value</MudText>
                 </CardHeaderContent>
             </MudCardHeader>
         </MudCard>
