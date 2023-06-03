@@ -2,36 +2,66 @@
 <PageTitle>RTSADocs | Files Stores</PageTitle>
 <h3>FileStores</h3>
 <PageContent>
-    <MudItem xs="12"><MudButton Variant="Variant.Outlined" FullWidth StartIcon="@Icons.Material.Filled.CreateNewFolder">Create a File Store</MudButton></MudItem>
-    <MudGrid Class="mt-6">        
-        <MudItem xs="12" sm="6" md="4">
-            <MudPaper Style="border-radius:10px;">
-                <MudGrid>
-                    <MudItem xs="5">
-                        <MudIcon Color="Color.Dark" Icon="@Icons.Material.Rounded.Storage" Style="height:150px; width:200px;"></MudIcon>
-                    </MudItem>
-                    <MudItem xs="7">
-                        <MudText GutterBottom Class="mt-4 ml-3" Typo="Typo.h6"><b>Human Resource</b></MudText>
-                        <MudText Class="ml-3 mt-2" Typo="Typo.subtitle1">0 Cabinets</MudText>
-                        <MudText Color="Color.Info" GutterBottom Class="ml-3" Typo="Typo.caption">Created : 3 mins ago</MudText>
-                        <div Class="ml-3 mt-2">
-                            <MudItem xs="12">
-                                <MudButton Style="text-transform:none;" Color="Color.Tertiary" Variant="Variant.Outlined" StartIcon="@Icons.Material.Outlined.Edit" Size="Size.Small">Edit</MudButton>
-                                <MudButton Style="text-transform:none;" Color="Color.Error" Variant="Variant.Outlined" StartIcon="@Icons.Material.Outlined.Archive" Size="Size.Small">Archive</MudButton>
-                            </MudItem>                          
-                        </div>
-                    </MudItem>
-                </MudGrid>
-            </MudPaper>
-        </MudItem>
+    <MudItem xs="12"><MudButton OnClick="Create" Variant="Variant.Outlined" FullWidth StartIcon="@Icons.Material.Filled.CreateNewFolder">Create a File Store</MudButton></MudItem>
+    <MudGrid Class="mt-6">
+        @if (fileStores.Any())
+        {
+            @foreach (var fileStore in fileStores)
+            {
+                <MudItem xs="12" sm="6" md="4">
+                    <MudPaper Style="border-radius:10px;">
+                        <MudGrid>
+                            <MudItem xs="5">
+                                <MudIcon Color="Color.Dark" Icon="@Icons.Material.Rounded.Storage" Style="height:150px; width:200px;"></MudIcon>
+                            </MudItem>
+                            <MudItem xs="7">
+                                <MudText GutterBottom Class="mt-4 ml-3" Typo="Typo.h6"><b>@fileStore.Name</b></MudText>
+                                <MudText Class="ml-3 mt-2" Typo="Typo.subtitle1">@fileStore.Cabinets?.Count Cabinets</MudText>
+                                <MudText Color="Color.Info" GutterBottom Class="ml-3" Typo="Typo.caption">Created : @fileStore.CreatedOn.ToString("dd MMM yy, H:mm")</MudText>
+                                <div Class="ml-3 mt-2">
+                                    <MudItem xs="12">
+                                        <MudButton Style="text-transform:none;" Color="Color.Tertiary" Variant="Variant.Outlined" StartIcon="@Icons.Material.Outlined.Edit" Size="Size.Small">Edit</MudButton>
+                                        <MudButton Style="text-transform:none;" Color="Color.Error" Variant="Variant.Outlined" StartIcon="@Icons.Material.Outlined.Archive" Size="Size.Small">Trash</MudButton>
+                                    </MudItem>
+                                </div>
+                            </MudItem>
+                        </MudGrid>
+                    </MudPaper>
+                </MudItem>
+            }
+        }
+        else
+        {
+
+            <MudItem xs="12" Class="m-4">
+                <MudAlert Severity="Severity.Warning">No FileStores Found.</MudAlert>
+            </MudItem>
+
+        }
     </MudGrid>
 </PageContent>
 
 @code {
+    IEnumerable<FileStore> fileStores = Enumerable.Empty<FileStore>();
     protected override void OnInitialized()
     {
         LayoutService.Breadcrumbs.Clear();
         LayoutService.Breadcrumbs.Add(new BreadcrumbItem(text: "Dashboard", href: "dashboard", icon: Icons.Material.Outlined.Dashboard));
         LayoutService.Breadcrumbs.Add(new BreadcrumbItem(text: "File Stores", href: "documents/stores", icon: Icons.Material.Outlined.Dataset));
+        LoadData();
+    }
+    void LoadData()
+    {
+        fileStores = fileStoreService.GetAll().ToList();
+        StateHasChanged();
+    }
+    async void Create()
+    {
+        var dialog = dialogService.Show<CreateEditFileStoreModal>("Create new filestore.");
+        var result = await dialog.Result;
+        if (!result.Canceled)
+        {
+            LoadData();
+        }
     }
 }

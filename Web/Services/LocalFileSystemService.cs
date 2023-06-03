@@ -28,9 +28,7 @@ namespace RTSADocs.Services
         }
         public Task<string> InitializeFileStore()
         {
-            var folderName = GenerateRandomStructure();
-            var fullPath = Path.Combine(FileSystemRootMain, folderName);
-            Directory.CreateDirectory(fullPath);
+            var folderName = GenerateRandomStructure();            
             return Task.FromResult(folderName);
         }
         private string GenerateRandomStructure(int maxDepth = 6)
@@ -39,7 +37,7 @@ namespace RTSADocs.Services
             var finalStructure = "";
             for (int i = 0; i < depth; i++)
             {
-                finalStructure += $"/{Guid.NewGuid().ToString()[..8]}";
+                finalStructure += $"\\  {Guid.NewGuid().ToString()[..8]}";
             }
             return finalStructure;
         }

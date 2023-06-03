@@ -1,0 +1,44 @@
+﻿<EditForm Model="Model" OnValidSubmit="Save">
+    <DataAnnotationsValidator/>
+    <MudDialog>
+        <DialogContent>
+            <MudTextField @bind-Value="@Model.Name" 
+                          For="()=>Model.Name" 
+                          Label="Name of FileStore"
+                          Variant="Variant.Outlined"
+                          FullWidth
+                          />
+        </DialogContent>
+        <DialogActions>
+            <MudButton OnClick="()=>Dialog.Cancel()">Cancel</MudButton>
+            <MudButton ButtonType="ButtonType.Submit" Color="Color.Success">Save</MudButton>
+        </DialogActions>
+    </MudDialog>
+</EditForm>
+@code {
+    [CascadingParameter]
+    MudDialogInstance Dialog { get; set; }
+    [Parameter]
+    public FileStore Model { get; set; }
+    [Parameter]
+    public bool IsEditing { get; set; }
+
+    protected override void OnInitialized()
+    {
+        if (!IsEditing)
+            Model = new FileStore();
+    }
+    async Task Save()
+    {
+        Model.Path ??= await fileSystemService.InitializeFileStore();
+        if (fileStoreService.Save(Model))
+        {
+            snackBar.Add("Changes saved successfully.", Severity.Success);
+            Dialog.Close();
+        }
+        else
+        {
+            snackBar.Add("failed to create filestore.", Severity.Error);
+        }                 
+    }
+}

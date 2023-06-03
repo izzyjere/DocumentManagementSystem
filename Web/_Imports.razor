@@ -9,9 +9,11 @@
 @using Microsoft.JSInterop
 @using MudBlazor
 @using RTSADocs
-@using RTSADocs.Data.Services;
+@using RTSADocs.Data.Services
 @using RTSADocs.Shared
-@using RTSADocs.Shared.Services;
+@using RTSADocs.Shared.Modals
+@using RTSADocs.Shared.Services
+@using RTSADocs.Shared.Models
 @using SimpleAuthentication
 @using RTSADocs.Services
 
@@ -22,6 +24,7 @@
 @inject IAuthenticationService authenticationService
 @inject ISnackbar snackBar
 @inject NavigationManager NavManager
+@inject IDialogService dialogService
 
 @inject IDocumentService documentService
 @inject ILibraryService libraryService
