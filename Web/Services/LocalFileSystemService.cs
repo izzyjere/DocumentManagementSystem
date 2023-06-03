@@ -10,13 +10,22 @@ namespace RTSADocs.Services
     {
         public string FileSystemRootMain => "C:\\ProgramData\\Codelabs\\DMS\\FileStores\\Main";
         public string FileSystemRootArchive => "C:\\ProgramData\\Codelabs\\DMS\\FileStores\\Archive";
-        readonly ICurrentUserService currentUserService;
-
-        public LocalFileSystemService(ICurrentUserService currentUserService)
+      
+        public LocalFileSystemService()
         {
-            this.currentUserService=currentUserService;
+           Init();
         }
-
+        private void Init()
+        {
+            if(!Directory.Exists(FileSystemRootMain))
+            {
+                Directory.CreateDirectory(FileSystemRootMain);
+            }
+            if(!Directory.Exists(FileSystemRootArchive))
+            {
+                Directory.CreateDirectory(FileSystemRootArchive);
+            }
+        }
         public Task<string> InitializeFileStore()
         {
             var folderName = GenerateRandomStructure();

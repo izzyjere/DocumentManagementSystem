@@ -23,7 +23,7 @@ builder.Services.AddSimpleAuthentication(userStoreOptions =>
 });
 builder.Services.AddTransient<ICurrentUserService,CurrentUserService>();
 builder.Services.AddDataAccess(connectionString);
-builder.Services.AddScoped<IFileSystemService, LocalFileSystemService>();
+builder.Services.AddSingleton<IFileSystemService, LocalFileSystemService>();
 builder.Services.AddScoped<AuthenticationStateProvider,CustomAuthenticationStateProvider>();
 var app = builder.Build();
 

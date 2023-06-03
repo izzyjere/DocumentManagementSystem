@@ -11,19 +11,21 @@ namespace RTSADocs.Authentication
         public CurrentUserService(IUserService userService)
         {
             _userService = userService;
-            GetUser();
+        
         }
-        async void GetUser()
+        async Task GetUser()
         {
             currentUser = await _userService.GetCurrentUserAsync();
         }
         public string GetUserId()
         {
+            Task.Run(GetUser).GetAwaiter().GetResult();
             return currentUser?.Id??string.Empty;
         }
 
         public string GetUserName()
         {
+            Task.Run(GetUser).GetAwaiter().GetResult();
             return currentUser?.UserName ?? string.Empty;
         }
     }
