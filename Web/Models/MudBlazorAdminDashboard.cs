@@ -1,6 +1,6 @@
 ﻿using MudBlazor;
 
-namespace RTSADocs.Shared
+namespace RTSADocs.Models
 {
     public class MudBlazorAdminDashboard : MudTheme
     {

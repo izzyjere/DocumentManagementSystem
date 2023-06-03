@@ -25,6 +25,10 @@
         {
             return new Result<T>(true, data);
         }
+        public new static Result<T> Failure(string message)
+        {
+            return new Result<T>(false,default, new List<string> { message });
+        }
 
     }
     public class Result
@@ -58,6 +62,10 @@
         public static Result Failure(IEnumerable<string> messages)
         {
             return new Result(false, messages);
+        }  
+        public static Result Failure(string message)
+        {
+            return new Result(false, new List<string> { message });
         }
     }
 }
