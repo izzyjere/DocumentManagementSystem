@@ -1,7 +1,33 @@
 ﻿@page "/documents/libraries"
 <h3>Libraries</h3>
 <PageContent>
-
+    <MudItem xs="12"><MudButton Variant="Variant.Outlined" FullWidth StartIcon="@Icons.Material.Filled.CreateNewFolder">Create a Library</MudButton></MudItem>
+    <MudGrid Class="mt-6">
+        <MudItem xs="12" sm="6" md="4">
+            <MudPaper Style="border-radius:10px;">
+                <MudGrid>
+                    <MudItem xs="5">
+                        <MudIcon Color="Color.Info" Icon="@Icons.Custom.Uncategorized.Folder" Style="height:150px; width:200px;"></MudIcon>
+                    </MudItem>
+                    <MudItem xs="7">
+                        <MudText GutterBottom Class="mt-4 ml-3" Typo="Typo.h6">
+                            <b>Human Resource</b>
+                            <MudChip Label Icon="@Icons.Material.Outlined.Layers" Size="Size.Small">HR/E</MudChip>
+                            <MudChip Label Icon="@Icons.Material.Outlined.Storage" Size="Size.Small">HR</MudChip>
+                        </MudText>
+                        <MudText Class="ml-3 mt-2" Typo="Typo.subtitle1">0 Files </MudText>
+                        <MudText Color="Color.Info" GutterBottom Class="ml-3" Typo="Typo.caption">Created : 3 mins ago</MudText>
+                        <div Class="ml-3 mt-2">
+                            <MudItem xs="12">
+                                <MudButton Style="text-transform:none;" Color="Color.Tertiary" Variant="Variant.Outlined" StartIcon="@Icons.Material.Outlined.Edit" Size="Size.Small">Edit</MudButton>
+                                <MudButton Style="text-transform:none;" Color="Color.Error" Variant="Variant.Outlined" StartIcon="@Icons.Material.Outlined.Archive" Size="Size.Small">Archive</MudButton>
+                            </MudItem>
+                        </div>
+                    </MudItem>
+                </MudGrid>
+            </MudPaper>
+        </MudItem>
+    </MudGrid>
 </PageContent>
 @code {
     protected override void OnInitialized()
