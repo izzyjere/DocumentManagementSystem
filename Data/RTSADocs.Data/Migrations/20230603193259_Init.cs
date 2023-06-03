@@ -67,7 +67,7 @@ namespace RTSADocs.Data.Migrations
                         column: x => x.FileStoreId,
                         principalTable: "FileStore",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -87,7 +87,7 @@ namespace RTSADocs.Data.Migrations
                         column: x => x.CabinetId,
                         principalTable: "Cabinet",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -123,7 +123,7 @@ namespace RTSADocs.Data.Migrations
                         column: x => x.LibraryId,
                         principalTable: "Library",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
