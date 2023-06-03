@@ -9,7 +9,9 @@
 @using Microsoft.JSInterop
 @using MudBlazor
 @using RTSADocs
+@using RTSADocs.Data.Services;
 @using RTSADocs.Shared
+@using RTSADocs.Shared.Services;
 @using SimpleAuthentication
 @using RTSADocs.Services
 
@@ -20,3 +22,9 @@
 @inject IAuthenticationService authenticationService
 @inject ISnackbar snackBar
 @inject NavigationManager NavManager
+
+@inject IDocumentService documentService
+@inject ILibraryService libraryService
+@inject ICabinetService cabinetService
+@inject IFileStoreService fileStoreService
+@inject IFileSystemService  fileSystemService

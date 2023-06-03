@@ -8,6 +8,8 @@ namespace RTSADocs.Shared.Services
         string FileSystemRootArchive { get; }
         string FileSystemRootMain { get; }
 
+        Result DecryptFile(string filePath, FileSource source);
+        Result EncryptFile(string filePath, FileSource source);
         Task<string> InitializeFileStore();
         Result MoveFileFromArchive(string filePath);
         Result MoveFileToArchive(string filePath);

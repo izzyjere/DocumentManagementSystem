@@ -91,5 +91,17 @@ namespace RTSADocs.Services
             }
             return Result<MemoryStream>.Failure("File not found.");
         }
+        public Result DecryptFile(string filePath, FileSource source)
+        {
+            try
+            {
+
+            }
+            catch (Exception e)
+            {   
+
+                return Result.Failure("File Decryption failed.");
+            }
+        }
     }
 }

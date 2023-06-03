@@ -6,6 +6,8 @@ using MudBlazor.Services;
 using RTSADocs.Authentication;
 using RTSADocs.Data;
 using RTSADocs.Data.Services;
+using RTSADocs.Services;
+using RTSADocs.Shared.Services;
 
 using SimpleAuthentication;
 
@@ -21,7 +23,7 @@ builder.Services.AddSimpleAuthentication(userStoreOptions =>
 });
 builder.Services.AddTransient<ICurrentUserService,CurrentUserService>();
 builder.Services.AddDataAccess(connectionString);
-
+builder.Services.AddScoped<IFileSystemService, LocalFileSystemService>();
 builder.Services.AddScoped<AuthenticationStateProvider,CustomAuthenticationStateProvider>();
 var app = builder.Build();
 

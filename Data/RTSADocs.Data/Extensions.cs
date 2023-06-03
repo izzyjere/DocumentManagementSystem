@@ -55,6 +55,9 @@ namespace RTSADocs.Data
             services.AddDomainServices();
             return services;
         }
-       
+        public static void PrintStackTrace(this Exception exception)
+        {
+            Console.WriteLine(exception.Message + exception.StackTrace);
+        }
     }
 }

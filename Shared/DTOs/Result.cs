@@ -67,5 +67,10 @@
         {
             return new Result(false, new List<string> { message });
         }
+
+        public static Result Success(string message)
+        {
+            return new Result(true, new List<string> { message });
+        }
     }
 }
