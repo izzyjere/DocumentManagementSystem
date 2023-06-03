@@ -76,14 +76,14 @@
     }
     async void Trash(FileStore fileStore)
     {
-        var confirm = await dialogService.ShowMessageBox(new MessageBoxOptions
+        bool? confirm = await dialogService.ShowMessageBox(new MessageBoxOptions
             {
                 CancelText = "Cancel",
                 Title = $"Delete : {fileStore.Name}",
                 Message = "Are you sure you want to delete this filestore? This action is dangeous!",
                 YesText = "Yes Delete"
             });
-        if ((bool)confirm)
+        if (confirm.HasValue && confirm.Value)
         {
             if (fileStoreService.Delete(fileStore.Id))
             {
