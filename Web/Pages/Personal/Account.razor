@@ -1,4 +1,4 @@
-﻿@page "/personal/account"
+﻿@page "/account"
 
 @inject ISnackbar Snackbar
 @using System.Text.RegularExpressions
@@ -9,7 +9,7 @@
     <MudTabPanel Text="General">
         <MudGrid>
             <MudItem xs="12" sm="4" md="3">
-                <MudCard >
+                <MudCard>
                     <MudCardHeader>
                         <CardHeaderContent>
                             <MudText>Public Profile</MudText>
@@ -18,12 +18,12 @@
                     <MudCardContent>
                         <div class="d-flex justify-center mb-4">
                             <MudAvatar Image="@AvatarImageLink" Style="height:100px; width:100px;">
-                                @if(AvatarImageLink == null)
+                                @if (AvatarImageLink == null)
                                 {
                                     <MudIcon Icon="@AvatarIcon" Size="Size.Large"></MudIcon>
                                 }
                             </MudAvatar>
-                                
+
                         </div>
                         <MudText Align="Align.Center">@FirstName @LastName</MudText>
                         <MudText Align="Align.Center">@JobTitle</MudText>
@@ -34,7 +34,7 @@
                 </MudCard>
             </MudItem>
             <MudItem xs="12" sm="8" md="9">
-                <MudCard >
+                <MudCard>
                     <MudCardHeader>
                         <CardHeaderContent>
                             <MudText>Profile Details</MudText>
@@ -166,7 +166,7 @@
 
     void DeletePicture()
     {
-        if(!String.IsNullOrEmpty(AvatarImageLink))
+        if (!String.IsNullOrEmpty(AvatarImageLink))
         {
             AvatarImageLink = null;
             AvatarIcon = Icons.Material.Outlined.SentimentVeryDissatisfied;
@@ -213,4 +213,10 @@
             return "Passwords don't match";
         return null;
     }
-} 
+    protected override void OnInitialized()
+    {
+        LayoutService.Breadcrumbs.Clear();
+        LayoutService.Breadcrumbs.Add(new BreadcrumbItem(text: "Dashboard", href: "dashboard", icon: Icons.Material.Outlined.Dashboard));
+        LayoutService.Breadcrumbs.Add(new BreadcrumbItem(text: "Account", href: "account", icon: Icons.Material.Outlined.AccountCircle));
+    }
+}

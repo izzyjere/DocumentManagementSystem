@@ -3,7 +3,7 @@
 <MudText Typo="Typo.h5" Color="Color.Primary" Class="mb-4">Dashboard</MudText>
 <MudGrid>
     <MudItem xs="12" sm="6" md="3">
-        <MudPaper  Class="d-flex flex-row pt-6 pb-4" Style="height:100px;">
+        <MudPaper @onclick='()=>NavManager.NavigateTo("documents/files",true)'  Class="d-flex flex-row pt-6 pb-4" Style="height:100px; cursor:pointer;">
             <MudIcon Icon="@Icons.Material.Filled.FilePresent" Color="Color.Primary" Class="mx-4" Style="width:54px; height:54px;"></MudIcon>
             <div>
                 <MudText Typo="Typo.subtitle1" Class="mud-text-secondary mb-n1">Files</MudText>
@@ -12,7 +12,7 @@
         </MudPaper>
     </MudItem>
     <MudItem xs="12" sm="6" md="3">
-        <MudPaper  Class="d-flex flex-row pt-6 pb-4" Style="height:100px;">
+        <MudPaper @onclick='()=>NavManager.NavigateTo("documents/libraries",true)' Class="d-flex flex-row pt-6 pb-4" Style="height:100px; cursor:pointer;">
             <MudIcon Icon="@Icons.Material.Filled.FolderOpen" Color="Color.Secondary" Class="mx-4" Style="width:54px; height:54px;"></MudIcon>
             <div>
                 <MudText Typo="Typo.subtitle1" Class="mud-text-secondary mb-n1">Libraries</MudText>
@@ -21,7 +21,7 @@
         </MudPaper>
     </MudItem>
     <MudItem xs="12" sm="6" md="3">
-        <MudPaper  Class="d-flex flex-row pt-6 pb-4" Style="height:100px;">
+        <MudPaper @onclick='()=>NavManager.NavigateTo("documents/cabinets",true)' Class="d-flex flex-row pt-6 pb-4" Style="height:100px; cursor:pointer;">
             <MudIcon Icon="@Icons.Material.Filled.Layers" Color="Color.Success" Class="mx-4" Style="width:54px; height:54px;"></MudIcon>
             <div>
                 <MudText Typo="Typo.subtitle1" Class="mud-text-secondary mb-n1">Cabinets</MudText>
@@ -30,7 +30,7 @@
         </MudPaper>
     </MudItem>
     <MudItem xs="12" sm="6" md="3">
-        <MudPaper  Class="d-flex flex-row pt-6 pb-4" Style="height:100px;">
+        <MudPaper @onclick='()=>NavManager.NavigateTo("documents/stores",true)' Class="d-flex flex-row pt-6 pb-4" Style="height:100px; cursor:pointer;">
             <MudIcon Icon="@Icons.Material.Filled.Dataset" Color="Color.Warning" Class="mx-4" Style="width:54px; height:54px;"></MudIcon>
             <div>
                 <MudText Typo="Typo.subtitle1" Class="mud-text-secondary mb-n1">File Stores</MudText>
@@ -42,7 +42,7 @@
         <MudCard  Style="height:100%;">
             <MudCardHeader>
                 <CardHeaderContent>
-                    <MudText Typo="Typo.h6">Earning Report</MudText>
+                    <MudText Typo="Typo.h6">Recent Archieves</MudText>
                 </CardHeaderContent>
             </MudCardHeader>
             <MudCardContent Class="px-0">
@@ -128,6 +128,12 @@
 </MudGrid>
 
 @code {
+    protected override void OnInitialized()
+    {
+        LayoutService.Breadcrumbs.Clear();
+        LayoutService.Breadcrumbs.Add(new BreadcrumbItem(text: "Dashboard", href: "dashboard", icon: Icons.Material.Outlined.Dashboard));
+    }
+
 
     EarningReport[] earningReports = new EarningReport[]
     {

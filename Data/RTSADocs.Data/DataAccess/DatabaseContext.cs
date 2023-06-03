@@ -43,8 +43,8 @@ namespace RTSADocs.Data.DataAccess
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            var entityTypes = Assembly.GetExecutingAssembly().GetTypes()
-             .Where(t => typeof(IEntity).IsAssignableFrom(t) && t != typeof(IEntity));
+            var entityTypes = typeof(Document).Assembly.GetTypes()
+             .Where(t => typeof(IEntity).IsAssignableFrom(t) && t != typeof(IEntity) && !t.IsAbstract && !t.IsInterface);
 
             foreach (var entityType in entityTypes)
             {
@@ -57,7 +57,7 @@ namespace RTSADocs.Data.DataAccess
                 }
             }
 
-            base.OnModelCreating(modelBuilder);
+           
         }
     }
 }

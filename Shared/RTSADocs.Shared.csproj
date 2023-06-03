@@ -9,4 +9,8 @@
 	<ItemGroup>
 		<SupportedPlatform Include="browser" />
 	</ItemGroup>
+
+	<ItemGroup>
+	  <EditorConfigFiles Remove="C:\Users\Wisdom\source\repos\izzyjere\RTSADocs\Shared\Models\.editorconfig" />
+	</ItemGroup>
 </Project>

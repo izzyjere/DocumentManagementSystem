@@ -1,0 +1,17 @@
+﻿@page "/documents/files"
+<h3>Files</h3>
+<PageContent>
+
+</PageContent>
+@code {
+    protected override void OnInitialized()
+    {
+        LayoutService.Breadcrumbs.Clear();
+        LayoutService.Breadcrumbs.Add(new BreadcrumbItem(text: "Dashboard", href: "dashboard", icon: Icons.Material.Outlined.Dashboard));
+        LayoutService.Breadcrumbs.Add(new BreadcrumbItem(text: "File Stores", href: "documents/stores", icon: Icons.Material.Outlined.Dataset));
+        LayoutService.Breadcrumbs.Add(new BreadcrumbItem(text: "Cabinets", href: "documents/cabinets", icon: Icons.Material.Outlined.Layers));
+        LayoutService.Breadcrumbs.Add(new BreadcrumbItem(text: "Libraries", href: "documents/libraries", icon: Icons.Material.Outlined.FolderShared));
+        LayoutService.Breadcrumbs.Add(new BreadcrumbItem(text: "Files", href: "documents/stores", icon: Icons.Material.Outlined.DocumentScanner));
+
+    }
+}
