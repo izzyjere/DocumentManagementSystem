@@ -48,7 +48,7 @@ namespace RTSADocs.Services
             try
             {
                 var randomFolder = GenerateRandomStructure(4);
-                var fileName = Guid.NewGuid().ToString() + ".rtsadoc";
+                var fileName = Guid.NewGuid().ToString() + ".dms";
                 var filePath = Path.Combine(fileStore, randomFolder, fileName);
                 var fileStreem = File.OpenWrite(Path.Combine(FileSystemRootMain, filePath));
                 await memoryStream.CopyToAsync(fileStreem);
