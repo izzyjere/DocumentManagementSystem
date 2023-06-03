@@ -12,8 +12,8 @@ using RTSADocs.Data.DataAccess;
 namespace RTSADocs.Data.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20230603181056_Init3")]
-    partial class Init3
+    [Migration("20230603193259_Init")]
+    partial class Init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

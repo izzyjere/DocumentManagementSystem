@@ -85,7 +85,7 @@
             });
         if ((bool)confirm)
         {
-            if (documentService.HasNoActiveDocuments(fileStore.Id)&&fileStoreService.Delete(fileStore.Id))
+            if (fileStoreService.Delete(fileStore.Id))
             {
                 snackBar.Add("FileStore Deleted. All files moved to archive.", Severity.Success);
                 LoadData();

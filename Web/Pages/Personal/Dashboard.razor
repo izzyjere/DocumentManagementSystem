@@ -7,7 +7,7 @@
             <MudIcon Icon="@Icons.Material.Filled.FilePresent" Color="Color.Primary" Class="mx-4" Style="width:54px; height:54px;"></MudIcon>
             <div>
                 <MudText Typo="Typo.subtitle1" Class="mud-text-secondary mb-n1">Files</MudText>
-                <MudText Typo="Typo.h5">0</MudText>
+                <MudText Typo="Typo.h5">@(dashboardService.Count<Document>())</MudText>
             </div>
         </MudPaper>
     </MudItem>
@@ -16,7 +16,7 @@
             <MudIcon Icon="@Icons.Material.Filled.FolderOpen" Color="Color.Secondary" Class="mx-4" Style="width:54px; height:54px;"></MudIcon>
             <div>
                 <MudText Typo="Typo.subtitle1" Class="mud-text-secondary mb-n1">Libraries</MudText>
-                <MudText Typo="Typo.h5">0</MudText>
+                    <MudText Typo="Typo.h5">@(dashboardService.Count<Library>())</MudText>
             </div>
         </MudPaper>
     </MudItem>
@@ -25,7 +25,7 @@
             <MudIcon Icon="@Icons.Material.Filled.Layers" Color="Color.Success" Class="mx-4" Style="width:54px; height:54px;"></MudIcon>
             <div>
                 <MudText Typo="Typo.subtitle1" Class="mud-text-secondary mb-n1">Cabinets</MudText>
-                <MudText Typo="Typo.h5">0</MudText>
+                    <MudText Typo="Typo.h5">@(dashboardService.Count<Cabinet>())</MudText>
             </div>
         </MudPaper>
     </MudItem>
@@ -34,7 +34,7 @@
             <MudIcon Icon="@Icons.Material.Filled.Dataset" Color="Color.Warning" Class="mx-4" Style="width:54px; height:54px;"></MudIcon>
             <div>
                 <MudText Typo="Typo.subtitle1" Class="mud-text-secondary mb-n1">File Stores</MudText>
-                <MudText Typo="Typo.h5">0</MudText>
+                    <MudText Typo="Typo.h5">@(dashboardService.Count<FileStore>())</MudText>
             </div>
         </MudPaper>
     </MudItem>
