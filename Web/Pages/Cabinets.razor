@@ -1,41 +1,86 @@
 ﻿@page "/documents/cabinets"
-<h3>Cabinets</h3>
+@using Microsoft.EntityFrameworkCore;
+<h3>@pageContext</h3>
 <PageContent>
     <MudItem xs="12"><MudButton Variant="Variant.Outlined" FullWidth StartIcon="@Icons.Material.Filled.CreateNewFolder">Create a Cabinet</MudButton></MudItem>
     <MudGrid Class="mt-6">
-        <MudItem xs="12" sm="6" md="4">
-            <MudPaper Style="border-radius:10px;">
-                <MudGrid>
-                    <MudItem xs="5">
-                        <MudIcon Color="Color.Dark" Icon="@Icons.Material.Rounded.Layers" Style="height:150px; width:200px;"></MudIcon>
-                    </MudItem>
-                    <MudItem xs="7">
-                        <MudText GutterBottom Class="mt-4 ml-3" Typo="Typo.h6">
-                            <b>Human Resource</b>
-                            <MudChip Label Icon="@Icons.Material.Outlined.Storage" Size="Size.Small">HR</MudChip>
-                        </MudText>
-                        <MudText Class="ml-3 mt-2" Typo="Typo.subtitle1">0 Libraries</MudText>
-                        <MudText Color="Color.Info" GutterBottom Class="ml-3" Typo="Typo.caption">Created : 3 mins ago</MudText>
-                        <div Class="ml-3 mt-2">
-                            <MudItem xs="12">
-                                <MudButton Style="text-transform:none;" Color="Color.Tertiary" Variant="Variant.Outlined" StartIcon="@Icons.Material.Outlined.Edit" Size="Size.Small">Edit</MudButton>
-                                <MudButton Style="text-transform:none;" Color="Color.Error" Variant="Variant.Outlined" StartIcon="@Icons.Material.Outlined.Archive" Size="Size.Small">Archive</MudButton>
+        @if (cabinets.Any())
+        {
+            foreach (var cabinet in cabinets)
+            {
+                <MudItem xs="12" sm="6" md="4">
+                    <MudPaper Style="border-radius:10px;">
+                        <MudGrid>
+                            <MudItem xs="5">
+                                <MudIcon Color="Color.Dark" Icon="@Icons.Material.Rounded.Layers" Style="height:150px; width:200px;"></MudIcon>
                             </MudItem>
-                        </div>
-                    </MudItem>
-                </MudGrid>
-            </MudPaper>
-        </MudItem>
+                            <MudItem xs="7">
+                                <MudText GutterBottom Class="mt-4 ml-3" Typo="Typo.h6">
+                                    <b>@cabinet.Name</b>
+                                    <MudChip Label Icon="@Icons.Material.Outlined.Storage" Size="Size.Small">@cabinet.FileStore.ShortName</MudChip>
+                                </MudText>
+                                <MudText @onclick='()=>NavManager.NavigateTo($"documents/libraries?cabinet={cabinet.Id}",true)' Style="cursor:pointer" Class="ml-3 mt-2" Typo="Typo.subtitle1">@(cabinet.Libraries?.Count??0) Libraries</MudText>
+                                <MudText Color="Color.Info" GutterBottom Class="ml-3" Typo="Typo.caption">Created : @cabinet.CreatedOn.ToString("dd MMM yy H:mm")</MudText>
+                                <div Class="ml-3 mt-2">
+                                    <MudItem xs="12">
+                                        <MudButton Style="text-transform:none;" Color="Color.Tertiary" Variant="Variant.Outlined" StartIcon="@Icons.Material.Outlined.Edit" Size="Size.Small">Edit</MudButton>
+                                        <MudButton Style="text-transform:none;" Color="Color.Error" Variant="Variant.Outlined" StartIcon="@Icons.Material.Outlined.Archive" Size="Size.Small">Archive</MudButton>
+                                    </MudItem>
+                                </div>
+                            </MudItem>
+                        </MudGrid>
+                    </MudPaper>
+                </MudItem>
+            }
+        }
+        else
+        {
+
+            <MudItem xs="12" Class="m-4">
+                <MudAlert Severity="Severity.Warning">No Cabinets Found.</MudAlert>
+            </MudItem>
+        }
     </MudGrid>
 </PageContent>
 
 @code {
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "store")]
+    public string StoreId { get; set; }
+    string pageContext = "Cabinets";
+    IEnumerable<Cabinet> cabinets = Enumerable.Empty<Cabinet>();
     protected override void OnInitialized()
     {
         LayoutService.Breadcrumbs.Clear();
         LayoutService.Breadcrumbs.Add(new BreadcrumbItem(text: "Dashboard", href: "dashboard", icon: Icons.Material.Outlined.Dashboard));
         LayoutService.Breadcrumbs.Add(new BreadcrumbItem(text: "File Stores", href: "documents/stores", icon: Icons.Material.Outlined.Dataset));
         LayoutService.Breadcrumbs.Add(new BreadcrumbItem(text: "Cabinets", href: "documents/cabinets", icon: Icons.Material.Outlined.Layers));
+        LoadData();
 
+    }
+    void LoadData()
+    {
+        if (!string.IsNullOrEmpty(StoreId))
+        {
+            var store = fileStoreService.GetById(Guid.Parse(StoreId));
+            
+            if(store is not null)
+            { 
+                cabinets = cabinetService.GetAll()
+                                         .Include(x=>x.Libraries)
+                                         .Include(x=>x.FileStore)
+                                         .Where(x => x.FileStoreId == store.Id).ToList();
+                pageContext = $"{store.Name} : Cabinets";
+            }
+           
+
+        }
+        else
+        {
+            cabinets = cabinetService.GetAll()
+                                     .Include(x => x.Libraries)
+                                     .Include(x => x.FileStore).ToList();
+        }
+        StateHasChanged();
     }
 }

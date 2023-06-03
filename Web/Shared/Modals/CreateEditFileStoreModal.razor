@@ -1,14 +1,21 @@
 ﻿<EditForm Model="Model" OnValidSubmit="Save">
-    <DataAnnotationsValidator/>
+    <DataAnnotationsValidator />
     <MudDialog>
         <DialogContent>
-            <MudTextField @bind-Value="@Model.Name" 
-                          For="()=>Model.Name" 
+            <MudTextField @bind-Value="@Model.Name"
+                          For="()=>Model.Name"
                           Style="min-width:300px;"
                           Label="Name of FileStore"
+                          Class="mb-4"
                           Variant="Variant.Outlined"
-                          FullWidth
-                          />
+                                FullWidth />
+            <MudTextField @bind-Value="@Model.ShortName"
+                          For="()=>Model.ShortName"
+                          Class="mb-4"
+                          Style="min-width:300px;"
+                          Label="Short Name"
+                          Variant="Variant.Outlined"
+                                FullWidth />
         </DialogContent>
         <DialogActions>
             <MudButton OnClick="()=>Dialog.Cancel()">Cancel</MudButton>
@@ -31,6 +38,7 @@
     }
     async Task Save()
     {
+        Model.ShortName.Replace(" ","").Trim();
         Model.Path ??= await fileSystemService.InitializeFileStore();
         if (fileStoreService.Save(Model))
         {
@@ -40,6 +48,6 @@
         else
         {
             snackBar.Add("failed to create filestore.", Severity.Error);
-        }                 
+        }
     }
 }

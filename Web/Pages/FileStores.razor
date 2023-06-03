@@ -17,7 +17,7 @@
                             </MudItem>
                             <MudItem xs="7">
                                 <MudText GutterBottom Class="mt-4 ml-3" Typo="Typo.h6"><b>@fileStore.Name</b></MudText>
-                                <MudText Class="ml-3 mt-2" Typo="Typo.subtitle1">@(fileStore.Cabinets?.Count??0) Cabinets</MudText>
+                                <MudText @onclick='()=>NavManager.NavigateTo($"documents/cabinets?store={fileStore.Id}",true)' Style="cursor:pointer" Class="ml-3 mt-2" Typo="Typo.subtitle1">@(fileStore.Cabinets?.Count??0) Cabinets</MudText>
                                 <MudText Color="Color.Info" GutterBottom Class="ml-3" Typo="Typo.caption">Created : @fileStore.CreatedOn.ToString("dd MMM yy, H:mm")</MudText>
                                 <div Class="ml-3 mt-2">
                                     <MudItem xs="12">
@@ -56,6 +56,7 @@
         fileStores = fileStoreService.GetAll().Include(x => x.Cabinets).ToList();
         StateHasChanged();
     }
+    
     async void Create()
     {
         var dialog = dialogService.Show<CreateEditFileStoreModal>("Create new filestore.");
