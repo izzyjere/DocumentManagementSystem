@@ -1,14 +1,25 @@
 ﻿@page "/documents/cabinets"
 @using Microsoft.EntityFrameworkCore;
-<h3>@pageContext</h3>
+<MudGrid>
+    <MudItem xs="3">
+        <h3>@pageContext</h3>       
+    </MudItem> 
+    <MudItem xs="3">
+        @if (Store is not null)
+        {
+            <MudButton Class="ml-4" OnClick='async()=>await JavaScriptRuntime.InvokeVoidAsync("window.location.replace","/documents/cabinets")' Style="text-transform:none" Color="Color.Info">View All</MudButton>
+        }
+    </MudItem>
+ </MudGrid>
+
 <PageContent>
-    <MudItem xs="12"><MudButton Variant="Variant.Outlined" FullWidth StartIcon="@Icons.Material.Filled.CreateNewFolder">Create a Cabinet</MudButton></MudItem>
-    <MudGrid Class="mt-6">
+    <MudItem xs="12"><MudButton OnClick="Create" Variant="Variant.Outlined" FullWidth StartIcon="@Icons.Material.Filled.CreateNewFolder">Create a Cabinet</MudButton></MudItem>
+    <MudGrid Style="max-height:70vh; overflow:scroll;" Class="mt-6">
         @if (cabinets.Any())
         {
             foreach (var cabinet in cabinets)
             {
-                <MudItem xs="12" sm="6" md="4">
+                <MudItem Class="mb-4" xs="12" sm="6" md="4">
                     <MudPaper Style="border-radius:10px;">
                         <MudGrid>
                             <MudItem xs="5">
@@ -23,8 +34,8 @@
                                 <MudText Color="Color.Info" GutterBottom Class="ml-3" Typo="Typo.caption">Created : @cabinet.CreatedOn.ToString("dd MMM yy H:mm")</MudText>
                                 <div Class="ml-3 mt-2">
                                     <MudItem xs="12">
-                                        <MudButton Style="text-transform:none;" Color="Color.Tertiary" Variant="Variant.Outlined" StartIcon="@Icons.Material.Outlined.Edit" Size="Size.Small">Edit</MudButton>
-                                        <MudButton Style="text-transform:none;" Color="Color.Error" Variant="Variant.Outlined" StartIcon="@Icons.Material.Outlined.Archive" Size="Size.Small">Archive</MudButton>
+                                        <MudButton OnClick="()=>Edit(cabinet)" Style="text-transform:none;" Color="Color.Tertiary" Variant="Variant.Outlined" StartIcon="@Icons.Material.Outlined.Edit" Size="Size.Small">Edit</MudButton>
+                                        <MudButton Class="ml-2" OnClick="()=>Trash(cabinet)" Style="text-transform:none;" Color="Color.Error" Variant="Variant.Outlined" StartIcon="@Icons.Material.Outlined.Delete" Size="Size.Small">Trash</MudButton>
                                     </MudItem>
                                 </div>
                             </MudItem>
@@ -45,9 +56,13 @@
 
 @code {
     [Parameter]
+    [SupplyParameterFromQuery(Name = "all")]
+    public int All { get; set; }
+    [Parameter]
     [SupplyParameterFromQuery(Name = "store")]
     public string StoreId { get; set; }
     string pageContext = "Cabinets";
+    FileStore? Store = null;
     IEnumerable<Cabinet> cabinets = Enumerable.Empty<Cabinet>();
     protected override void OnInitialized()
     {
@@ -62,17 +77,17 @@
     {
         if (!string.IsNullOrEmpty(StoreId))
         {
-            var store = fileStoreService.GetById(Guid.Parse(StoreId));
-            
-            if(store is not null)
-            { 
+            Store = fileStoreService.GetById(Guid.Parse(StoreId));
+
+            if (Store is not null)
+            {
                 cabinets = cabinetService.GetAll()
-                                         .Include(x=>x.Libraries)
-                                         .Include(x=>x.FileStore)
-                                         .Where(x => x.FileStoreId == store.Id).ToList();
-                pageContext = $"{store.Name} : Cabinets";
+                                         .Include(x => x.Libraries)
+                                         .Include(x => x.FileStore)
+                                         .Where(x => x.FileStoreId == Store.Id).ToList();
+                pageContext = $"{Store.Name} : Cabinets";
             }
-           
+
 
         }
         else
@@ -82,5 +97,45 @@
                                      .Include(x => x.FileStore).ToList();
         }
         StateHasChanged();
+    }
+    async void Create()
+    {
+        var dialog = dialogService.Show<CreateEditCabinetModal>("Create new filestore.", new DialogParameters { ["Store"] = Store });
+        var result = await dialog.Result;
+        if (!result.Canceled)
+        {
+            LoadData();
+        }
+    }
+    async void Edit(Cabinet record)
+    {
+        var dialog = dialogService.Show<CreateEditCabinetModal>($"Edit:  {record.Name}", new DialogParameters { ["Model"]=record, ["Store"]=record.FileStore, ["IsEditing"]=true });
+        var result = await dialog.Result;
+        if (!result.Canceled)
+        {
+            LoadData();
+        }
+    }
+    async void Trash(Cabinet record)
+    {
+        bool? confirm = await dialogService.ShowMessageBox(new MessageBoxOptions
+            {
+                CancelText = "Cancel",
+                Title = $"Delete : {record.Name}",
+                Message = "Are you sure you want to delete this cabinet? This action is dangeous!",
+                YesText = "Yes Delete"
+            });
+        if (confirm.HasValue && confirm.Value)
+        {
+            if (cabinetService.Delete(record.Id))
+            {
+                snackBar.Add("Cabinet Deleted. All files moved to archive.", Severity.Success);
+                LoadData();
+            }
+            else
+            {
+                snackBar.Add("Cabinet Delete Failed. Ensure that were files moved to archive.", Severity.Error);
+            }
+        }
     }
 }

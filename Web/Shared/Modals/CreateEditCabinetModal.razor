@@ -1,0 +1,95 @@
+﻿<EditForm Model="Model" OnValidSubmit="Save">
+    <DataAnnotationsValidator />
+    <MudDialog>
+        <DialogContent>
+            <MudTextField @bind-Value="@Model.Name"
+                          For="()=>Model.Name"
+                          Style="min-width:300px;"
+                          Label="Name of Cabinet"
+                          Class="mb-4"
+                          Variant="Variant.Outlined"
+                                FullWidth />
+            <MudTextField @bind-Value="@Model.Code"
+                          For="()=>Model.Code"
+                          Class="mb-4"
+                          Style="min-width:300px;"
+                          Label="Code"
+                          Variant="Variant.Outlined"
+                                FullWidth />
+            @if (Store is not null)
+            {
+                <MudTextField Value="@Store.Name"
+                              Class="mb-4"
+                                    ReadOnly
+                              Style="min-width:300px;"
+                              Label="File Store"
+                              Variant="Variant.Outlined"
+                                    FullWidth />
+            }
+            else
+            {
+                <MudSelect @bind-Value="@Model.FileStoreId"
+                           For="()=>Model.FileStoreId"
+                           Class="mb-4"
+                           Style="min-width:300px;"
+                           Label="File Store"
+                           Variant="Variant.Outlined"
+                           FullWidth>
+                  <MudSelectItem Value="Guid.Empty">No filestore selected</MudSelectItem>
+                   @foreach(var fileStore in fileStores)
+                   {
+                      <MudSelectItem Value="@fileStore.Id">@fileStore.Name</MudSelectItem>  
+                   }
+                </MudSelect>
+            }
+        </DialogContent>
+        <DialogActions>
+            <MudButton OnClick="()=>Dialog.Cancel()">Cancel</MudButton>
+            <MudButton ButtonType="ButtonType.Submit" Color="Color.Success">Save</MudButton>
+        </DialogActions>
+    </MudDialog>
+</EditForm>
+@code {
+    [CascadingParameter]
+    MudDialogInstance Dialog { get; set; }
+    [Parameter]
+    public Cabinet Model { get; set; }
+    [Parameter]
+    public bool IsEditing { get; set; }
+
+    [Parameter]
+    public FileStore? Store { get; set; }
+    IEnumerable<FileStore> fileStores = Enumerable.Empty<FileStore>();
+    protected override void OnInitialized()
+    {
+        if (Store is null)
+        {
+            fileStores = fileStoreService.GetAll().ToList();
+        }
+        else { }
+        if (!IsEditing)
+        {
+            Model = new Cabinet();
+        }
+    }
+    void Save()
+    {   if(Store is not null)
+        {
+            Model.FileStoreId = Store.Id;
+        }else{}
+        if(Model.FileStoreId == Guid.Empty)
+        {
+            return;
+        }
+        Model.Code.Replace(" ", "").Trim();
+        if (cabinetService.Save(Model))
+        {
+            snackBar.Add("Changes saved successfully.", Severity.Success);
+            Dialog.Close();
+        }
+        else
+        {
+            snackBar.Add("Failed to create Cabinet.", Severity.Error);
+        }
+    }
+}
