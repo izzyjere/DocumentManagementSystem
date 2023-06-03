@@ -1,4 +1,6 @@
-﻿using RTSADocs.Shared.DTOs;
+﻿using RTSADocs.Data;
+using RTSADocs.Data.Services;
+using RTSADocs.Shared.DTOs;
 using RTSADocs.Shared.Models;
 using RTSADocs.Shared.Services;
 
@@ -8,6 +10,12 @@ namespace RTSADocs.Services
     {
         public string FileSystemRootMain => "C:\\ProgramData\\Codelabs\\DMS\\FileStores\\Main";
         public string FileSystemRootArchive => "C:\\ProgramData\\Codelabs\\DMS\\FileStores\\Archive";
+        readonly ICurrentUserService currentUserService;
+
+        public LocalFileSystemService(ICurrentUserService currentUserService)
+        {
+            this.currentUserService=currentUserService;
+        }
 
         public Task<string> InitializeFileStore()
         {
@@ -95,11 +103,25 @@ namespace RTSADocs.Services
         {
             try
             {
-
+                
+                return Result.Success("File Decrypted.");
             }
             catch (Exception e)
-            {   
-
+            {
+                e.PrintStackTrace();  
+                return Result.Failure("File Decryption failed.");
+            }
+        
+        }
+        public Result EncryptFile(string filePath, FileSource source) 
+        {
+            try
+            {
+                return Result.Success("File Decrypted.");
+            }
+            catch (Exception e)
+            {
+                e.PrintStackTrace();  
                 return Result.Failure("File Decryption failed.");
             }
         }
