@@ -2,8 +2,8 @@
 {
     public class PageFile : Entity
     {
-        public string FileName { get; set; }
-        public string FileFormat { get; set; }
+        public string Path { get; set; }
+        public string Format { get; set; }
         public Document Document { get; set; }
         public DateTime DateUploaded { get; set; }
     }

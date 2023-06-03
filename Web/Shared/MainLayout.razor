@@ -1,7 +1,7 @@
 ﻿@inherits LayoutComponentBase
 
 
-<MudThemeProvider Theme="_theme" />
+<MudThemeProvider  />
 <MudDialogProvider />
 <MudSnackbarProvider />
 <RedirectToLogin/>
@@ -56,8 +56,7 @@
 
 
 @code {
-    private MudBlazorAdminDashboard _theme = new();
-
+  
     public bool _drawerOpen = true;
 
     void DrawerToggle()
