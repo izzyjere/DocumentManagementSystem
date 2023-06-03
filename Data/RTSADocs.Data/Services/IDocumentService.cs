@@ -2,6 +2,6 @@
 {
     public interface IDocumentService : ICrudService<Document>
     {
-        IEnumerable<Document> Search(string query);
+        IEnumerable<Document> Search(string query);     
     }
 }

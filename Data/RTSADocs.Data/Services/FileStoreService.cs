@@ -1,4 +1,7 @@
 ﻿global using RTSADocs.Shared.Contracts;
+
+using Microsoft.EntityFrameworkCore;
+
 using RTSADocs.Data.DataAccess;
 
 namespace RTSADocs.Data.Services
@@ -8,6 +11,6 @@ namespace RTSADocs.Data.Services
     {
         public FileStoreService(IRepository<FileStore> repository) : base(repository)
         {
-        }
+        }         
     }
 }

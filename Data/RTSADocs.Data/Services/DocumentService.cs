@@ -1,6 +1,7 @@
 ﻿global using RTSADocs.Shared.Models;
 
 using RTSADocs.Data.DataAccess;
+using RTSADocs.Shared.Constants;
 
 namespace RTSADocs.Data.Services
 {
@@ -10,6 +11,7 @@ namespace RTSADocs.Data.Services
         public DocumentService(IRepository<Document> repository) : base(repository)
         {
         }
+
         public IEnumerable<Document> Search(string query)
         {
             return GetAll().Where(d => d.Code.Contains(query)||
