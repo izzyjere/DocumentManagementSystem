@@ -1,11 +1,4 @@
 ﻿using RTSADocs.Data.DataAccess;
-using RTSADocs.Shared.Contracts;
-
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace RTSADocs.Data.Services
 {

@@ -1,6 +1,4 @@
-﻿using RTSADocs.Shared.Contracts;
-
-namespace RTSADocs.Data.Services
+﻿namespace RTSADocs.Data.Services
 {
     public interface ICrudService<TModel> where TModel : class, IEntity
     {

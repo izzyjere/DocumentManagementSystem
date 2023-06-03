@@ -1,9 +1,6 @@
 ﻿global using RTSADocs.Shared.Models;
 
-using Microsoft.EntityFrameworkCore;
-
 using RTSADocs.Data.DataAccess;
-using RTSADocs.Shared.Contracts;
 
 namespace RTSADocs.Data.Services
 {

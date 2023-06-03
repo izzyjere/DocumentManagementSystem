@@ -1,10 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-
-using RTSADocs.Shared.Contracts;
-
-
-namespace RTSADocs.Data.DataAccess
+﻿namespace RTSADocs.Data.DataAccess
 {
     internal class Repository<TModel> : IRepository<TModel> where TModel : class, IEntity
     {

@@ -1,8 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+
 using RTSADocs.Data.DataAccess;
 using RTSADocs.Data.Services;
-using RTSADocs.Shared.Contracts;
 namespace RTSADocs.Data
 {
     public static class Extensions

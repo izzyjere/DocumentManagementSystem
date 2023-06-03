@@ -1,14 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
 using RTSADocs.Data.Services;
-using RTSADocs.Shared.Contracts;
-
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace RTSADocs.Data.DataAccess
 {

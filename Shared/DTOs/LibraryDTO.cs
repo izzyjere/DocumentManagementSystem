@@ -1,6 +1,4 @@
-﻿using RTSADocs.Shared.Models;
-
-namespace RTSADocs.Shared.DTOs
+﻿namespace RTSADocs.Shared.DTOs
 {
     public class LibraryDTO
     {      

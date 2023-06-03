@@ -1,5 +1,4 @@
 ﻿global using RTSADocs.Shared.Contracts;
-using RTSADocs.Shared.Constants;
 
 using System.ComponentModel.DataAnnotations.Schema;
 

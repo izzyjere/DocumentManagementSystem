@@ -1,6 +1,4 @@
-﻿using RTSADocs.Shared.Contracts;
-
-namespace RTSADocs.Data.DataAccess
+﻿namespace RTSADocs.Data.DataAccess
 {
     internal interface IRepository<TModel> where TModel : class, IEntity
     {
