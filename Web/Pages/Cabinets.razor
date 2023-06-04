@@ -5,10 +5,10 @@
         <h3>@pageContext</h3>       
     </MudItem> 
     <MudItem xs="2"></MudItem>
-    <MudItem Class="pl-4" xs="2">
+    <MudItem xs="2">
         @if (Store is not null)
         {
-            <MudButton Class="ml-4" OnClick='async()=>await JavaScriptRuntime.InvokeVoidAsync("window.location.replace","/documents/cabinets")' Style="text-transform:none" Color="Color.Info">View All</MudButton>
+            <MudButton OnClick='async()=>await JavaScriptRuntime.InvokeVoidAsync("window.location.replace","/documents/cabinets")' Style="text-transform:none" Color="Color.Info">View All Cabinets</MudButton>
         }
     </MudItem>
  </MudGrid>

@@ -1,9 +1,27 @@
 ﻿@page "/documents/files"
-<h3>Files</h3>
+@using Microsoft.EntityFrameworkCore;
+<MudGrid>
+    <MudItem xs="8">
+        <h3>@pageContext</h3>
+    </MudItem>
+    <MudItem xs="2"></MudItem>
+    <MudItem  xs="2">
+        @if (Library is not null)
+        {
+            <MudButton  OnClick='async()=>await JavaScriptRuntime.InvokeVoidAsync("window.location.replace","/documents/files")' Style="text-transform:none" Color="Color.Info">View All Files</MudButton>
+        }
+    </MudItem>
+</MudGrid>
 <PageContent>
 
 </PageContent>
 @code {
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "library")]
+    public string LibraryId { get; set; }
+    string pageContext = "Files";
+    Library? Library = null;
+    IEnumerable<Document> documents = Enumerable.Empty<Document>();
     protected override void OnInitialized()
     {
         LayoutService.Breadcrumbs.Clear();
@@ -12,6 +30,75 @@
         LayoutService.Breadcrumbs.Add(new BreadcrumbItem(text: "Cabinets", href: "documents/cabinets", icon: Icons.Material.Outlined.Layers));
         LayoutService.Breadcrumbs.Add(new BreadcrumbItem(text: "Libraries", href: "documents/libraries", icon: Icons.Material.Outlined.FolderShared));
         LayoutService.Breadcrumbs.Add(new BreadcrumbItem(text: "Files", href: "documents/stores", icon: Icons.Material.Outlined.DocumentScanner));
+        LoadData();
+    }
+    void LoadData()
+    {
+        if (!string.IsNullOrEmpty(LibraryId))
+        {
+            Library = libraryService.GetAll().Include(x => x.Cabinet)
+                     .ThenInclude(c => c.FileStore)
+                     .FirstOrDefault(x => x.Id==Guid.Parse(LibraryId));
 
+            if (Library is not null)
+            {
+                documents = documentService.GetAll()
+                                         .Include(x => x.Library)
+                                         .ThenInclude(x => x.Cabinet)
+                                         .ThenInclude(x => x.FileStore)
+                                         .Where(x => x.LibraryId == Library.Id).ToList();
+                pageContext = $"{Library.Cabinet.FileStore.Name} : {Library.Cabinet.Name} : {Library.Name} : Files";
+            }
+
+
+        }
+        else
+        {
+            documents = documentService.GetAll()
+                                         .Include(x => x.Library)
+                                         .ThenInclude(x => x.Cabinet)
+                                         .ThenInclude(x => x.FileStore).ToList();
+        }
+        StateHasChanged();
+    }
+    async void Create()
+    {
+        var dialog = dialogService.Show<CreateEditDocumentModal>("Create new document.", new DialogParameters { ["Library"] = Library });
+        var result = await dialog.Result;
+        if (!result.Canceled)
+        {
+            LoadData();
+        }
+    }
+    async void Edit(Document record)
+    {
+        var dialog = dialogService.Show<CreateEditDocumentModal>($"Edit:  {record.Description}", new DialogParameters { ["Model"]=record, ["Library"]=record.Library, ["IsEditing"]=true });
+        var result = await dialog.Result;
+        if (!result.Canceled)
+        {
+            LoadData();
+        }
+    }
+    async void Trash(Document record)
+    {
+        bool? confirm = await dialogService.ShowMessageBox(new MessageBoxOptions
+            {
+                CancelText = "Cancel",
+                Title = $"Delete : {record.Description}",
+                Message = "Are you sure you want to delete this document? This action is dangeous!",
+                YesText = "Yes Delete"
+            });
+        if (confirm.HasValue && confirm.Value)
+        {
+            if (libraryService.Delete(record.Id))
+            {
+                snackBar.Add("Document Deleted. All files moved to archive.", Severity.Success);
+                LoadData();
+            }
+            else
+            {
+                snackBar.Add("Document Delete Failed. Ensure that were files moved to archive.", Severity.Error);
+            }
+        }
     }
 }
