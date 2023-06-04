@@ -7,5 +7,14 @@
         public Cabinet Cabinet { get; set;}
         public string Code { get; set; }
         public List<Document> Documents { get; set; }
+
+        public bool HasFiles()
+        {
+            if (Documents is not null)
+            {
+                return Documents.Any();
+            }
+            return false;
+        }
     }
 }

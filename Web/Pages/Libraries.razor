@@ -23,7 +23,7 @@
                     <MudPaper Style="border-radius:10px;">
                         <MudGrid>
                             <MudItem xs="5">
-                                <MudIcon Color="Color.Info" Icon="@Icons.Custom.Uncategorized.Folder" Style="height:150px; width:200px;"></MudIcon>
+                                <MudIcon Color="Color.Info" Icon="@(library.HasFiles()?Icons.Custom.Uncategorized.FolderOpen:Icons.Custom.Uncategorized.Folder)" Style="height:150px; width:200px;"></MudIcon>
                             </MudItem>
                             <MudItem xs="7">
                                 <MudText GutterBottom Class="mt-4 ml-3" Typo="Typo.h6">
