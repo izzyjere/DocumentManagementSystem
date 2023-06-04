@@ -1,6 +1,6 @@
 ﻿namespace RTSADocs.Shared.Models
 {
-    public class Library : Entity
+    public class Library : AuditableEntity  
     {
         public Guid CabinetId { get; set; }
         public string Name { get; set; }        

@@ -1,35 +1,66 @@
 ﻿@page "/documents/libraries"
-<h3>Libraries</h3>
+@using Microsoft.EntityFrameworkCore;
+<MudGrid>
+    <MudItem xs="3">
+        <h3>@pageContext</h3>
+    </MudItem>
+    <MudItem xs="3">
+        @if (Cabinet is not null)
+        {
+            <MudButton Class="ml-4" OnClick='async()=>await JavaScriptRuntime.InvokeVoidAsync("window.location.replace","/documents/libraries")' Style="text-transform:none" Color="Color.Info">View All</MudButton>
+        }
+    </MudItem>
+</MudGrid>
 <PageContent>
-    <MudItem xs="12"><MudButton Variant="Variant.Outlined" FullWidth StartIcon="@Icons.Material.Filled.CreateNewFolder">Create a Library</MudButton></MudItem>
-    <MudGrid Class="mt-6">
-        <MudItem xs="12" sm="6" md="4">
-            <MudPaper Style="border-radius:10px;">
-                <MudGrid>
-                    <MudItem xs="5">
-                        <MudIcon Color="Color.Info" Icon="@Icons.Custom.Uncategorized.Folder" Style="height:150px; width:200px;"></MudIcon>
-                    </MudItem>
-                    <MudItem xs="7">
-                        <MudText GutterBottom Class="mt-4 ml-3" Typo="Typo.h6">
-                            <b>Human Resource</b>
-                            <MudChip Label Icon="@Icons.Material.Outlined.Layers" Size="Size.Small">HR/E</MudChip>
-                            <MudChip Label Icon="@Icons.Material.Outlined.Storage" Size="Size.Small">HR</MudChip>
-                        </MudText>
-                        <MudText Class="ml-3 mt-2" Typo="Typo.subtitle1">0 Files </MudText>
-                        <MudText Color="Color.Info" GutterBottom Class="ml-3" Typo="Typo.caption">Created : 3 mins ago</MudText>
-                        <div Class="ml-3 mt-2">
-                            <MudItem xs="12">
-                                <MudButton Style="text-transform:none;" Color="Color.Tertiary" Variant="Variant.Outlined" StartIcon="@Icons.Material.Outlined.Edit" Size="Size.Small">Edit</MudButton>
-                                <MudButton Style="text-transform:none;" Color="Color.Error" Variant="Variant.Outlined" StartIcon="@Icons.Material.Outlined.Archive" Size="Size.Small">Archive</MudButton>
+    <MudItem xs="12"><MudButton OnClick="Create" Variant="Variant.Outlined" FullWidth StartIcon="@Icons.Material.Filled.CreateNewFolder">Create a Library</MudButton></MudItem>
+    <MudGrid Style="max-height:70vh; overflow:scroll;" Class="mt-6">
+        @if (libraries.Any())
+        {
+            foreach (var library in libraries)
+            {
+                <MudItem xs="12" sm="6" md="4" Class="mb-4">
+                    <MudPaper Style="border-radius:10px;">
+                        <MudGrid>
+                            <MudItem xs="5">
+                                <MudIcon Color="Color.Info" Icon="@Icons.Custom.Uncategorized.Folder" Style="height:150px; width:200px;"></MudIcon>
                             </MudItem>
-                        </div>
-                    </MudItem>
-                </MudGrid>
-            </MudPaper>
-        </MudItem>
+                            <MudItem xs="7">
+                                <MudText GutterBottom Class="mt-4 ml-3" Typo="Typo.h6">
+                                    <b>@library.Name</b>
+                                    <MudChip @onclick='()=>NavManager.NavigateTo($"documents/libraries?cabinet={library.CabinetId}",true)' Label Icon="@Icons.Material.Outlined.Layers" Size="Size.Small">@library.Cabinet.Code</MudChip>
+                                    <MudChip Label Icon="@Icons.Material.Outlined.Storage" Size="Size.Small">@library.Cabinet.FileStore.ShortName</MudChip>
+                                </MudText>
+                                <MudText @onclick='()=>NavManager.NavigateTo($"documents/files?library={library.Id}",true)' Style="cursor:pointer" Class="ml-3 mt-2" Typo="Typo.subtitle1">@(library.Documents?.Count??0) Files</MudText>
+                                <MudText Color="Color.Info" GutterBottom Class="ml-3" Typo="Typo.caption">Created : @library.CreatedOn.ToString("dd MMM yy H:mm")</MudText>
+                                <div Class="ml-3 mt-2">
+                                    <MudItem xs="12">
+                                        <MudButton OnClick="()=>Edit(library)" Style="text-transform:none;" Color="Color.Tertiary" Variant="Variant.Outlined" StartIcon="@Icons.Material.Outlined.Edit" Size="Size.Small">Edit</MudButton>
+                                        <MudButton Class="ml-2" OnClick="()=>Trash(library)" Style="text-transform:none;" Color="Color.Error" Variant="Variant.Outlined" StartIcon="@Icons.Material.Outlined.Delete" Size="Size.Small">Trash</MudButton>
+                                    </MudItem>
+                                </div>
+                            </MudItem>
+                        </MudGrid>
+                    </MudPaper>
+                </MudItem>
+            }
+        }
+        else
+        {
+
+            <MudItem xs="12" Class="m-4">
+                <MudAlert Severity="Severity.Warning">No Libraries Found.</MudAlert>
+            </MudItem>
+        }
     </MudGrid>
 </PageContent>
 @code {
+
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "cabinet")]
+    public string CabinetId { get; set; }
+    string pageContext = "Libraries";
+    Cabinet? Cabinet = null;
+    IEnumerable<Library> libraries = Enumerable.Empty<Library>();
     protected override void OnInitialized()
     {
         LayoutService.Breadcrumbs.Clear();
@@ -37,6 +68,71 @@
         LayoutService.Breadcrumbs.Add(new BreadcrumbItem(text: "File Stores", href: "documents/stores", icon: Icons.Material.Outlined.Dataset));
         LayoutService.Breadcrumbs.Add(new BreadcrumbItem(text: "Cabinets", href: "documents/cabinets", icon: Icons.Material.Outlined.Layers));
         LayoutService.Breadcrumbs.Add(new BreadcrumbItem(text: "Libraries", href: "documents/libraries", icon: Icons.Material.Outlined.FolderShared));
+        LoadData();
+    }
+    void LoadData()
+    {
+        if (!string.IsNullOrEmpty(CabinetId))
+        {
+            Cabinet = cabinetService.GetById(Guid.Parse(CabinetId));
 
+            if (Cabinet is not null)
+            {
+                libraries = libraryService.GetAll()
+                                         .Include(x => x.Documents)
+                                         .Include(x => x.Cabinet)
+                                         .Where(x => x.CabinetId == Cabinet.Id).ToList();
+                pageContext = $"{Cabinet.Name} : Libraries";
+            }
+
+
+        }
+        else
+        {
+            libraries = libraryService.GetAll()
+                                         .Include(x => x.Documents)
+                                         .Include(x => x.Cabinet).ToList();
+        }
+        StateHasChanged();
+    }
+    async void Create()
+    {
+        var dialog = dialogService.Show<CreateEditLibraryModal>("Create new library.", new DialogParameters { ["Cabinet"] = Cabinet });
+        var result = await dialog.Result;
+        if (!result.Canceled)
+        {
+            LoadData();
+        }
+    }
+    async void Edit(Library record)
+    {
+        var dialog = dialogService.Show<CreateEditLibraryModal>($"Edit:  {record.Name}", new DialogParameters { ["Model"]=record, ["Cabinet"]=record.Cabinet, ["IsEditing"]=true });
+        var result = await dialog.Result;
+        if (!result.Canceled)
+        {
+            LoadData();
+        }
+    }
+    async void Trash(Library record)
+    {
+        bool? confirm = await dialogService.ShowMessageBox(new MessageBoxOptions
+            {
+                CancelText = "Cancel",
+                Title = $"Delete : {record.Name}",
+                Message = "Are you sure you want to delete this library? This action is dangeous!",
+                YesText = "Yes Delete"
+            });
+        if (confirm.HasValue && confirm.Value)
+        {
+            if (libraryService.Delete(record.Id))
+            {
+                snackBar.Add("Library Deleted. All files moved to archive.", Severity.Success);
+                LoadData();
+            }
+            else
+            {
+                snackBar.Add("Library Delete Failed. Ensure that were files moved to archive.", Severity.Error);
+            }
+        }
     }
 }

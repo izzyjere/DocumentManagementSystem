@@ -28,7 +28,7 @@
                             <MudItem xs="7">
                                 <MudText GutterBottom Class="mt-4 ml-3" Typo="Typo.h6">
                                     <b>@cabinet.Name</b>
-                                    <MudChip Label Icon="@Icons.Material.Outlined.Storage" Size="Size.Small">@cabinet.FileStore.ShortName</MudChip>
+                                    <MudChip @onclick='()=>NavManager.NavigateTo($"documents/cabinets?store={cabinet.FileStoreId}",true)' Label Icon="@Icons.Material.Outlined.Storage" Size="Size.Small">@cabinet.FileStore.ShortName</MudChip>
                                 </MudText>
                                 <MudText @onclick='()=>NavManager.NavigateTo($"documents/libraries?cabinet={cabinet.Id}",true)' Style="cursor:pointer" Class="ml-3 mt-2" Typo="Typo.subtitle1">@(cabinet.Libraries?.Count??0) Libraries</MudText>
                                 <MudText Color="Color.Info" GutterBottom Class="ml-3" Typo="Typo.caption">Created : @cabinet.CreatedOn.ToString("dd MMM yy H:mm")</MudText>
@@ -55,9 +55,7 @@
 </PageContent>
 
 @code {
-    [Parameter]
-    [SupplyParameterFromQuery(Name = "all")]
-    public int All { get; set; }
+    
     [Parameter]
     [SupplyParameterFromQuery(Name = "store")]
     public string StoreId { get; set; }
@@ -100,7 +98,7 @@
     }
     async void Create()
     {
-        var dialog = dialogService.Show<CreateEditCabinetModal>("Create new filestore.", new DialogParameters { ["Store"] = Store });
+        var dialog = dialogService.Show<CreateEditCabinetModal>("Create new cabinet.", new DialogParameters { ["Store"] = Store });
         var result = await dialog.Result;
         if (!result.Canceled)
         {
