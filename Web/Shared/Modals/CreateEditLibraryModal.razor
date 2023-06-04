@@ -1,4 +1,5 @@
-﻿<EditForm Model="Model" OnValidSubmit="Save">
+﻿@using Microsoft.EntityFrameworkCore;
+<EditForm Model="Model" OnValidSubmit="Save">
     <DataAnnotationsValidator />
     <MudDialog>
         <DialogContent>
@@ -28,19 +29,34 @@
             }
             else
             {
-                <MudSelect @bind-Value="@Model.CabinetId"
-                           For="()=>Model.CabinetId"
+                <MudSelect @bind-Value="@fileStoreM"
                            Class="mb-4"
                            Style="min-width:300px;"
-                           Label="File Cabinet"
+                           Label="File Store"
                            Variant="Variant.Outlined"
                               FullWidth>
-                <MudSelectItem Value="Guid.Empty">No filestore selected</MudSelectItem>
-                @foreach (var cabinet in cabinets)
+                <MudSelectItem T="FileStore" Value="default">No filestore selected</MudSelectItem>
+                @foreach (var fileStore in fileStores)
                     {
-                        <MudSelectItem Value="@cabinet.Id">@cabinet.Name</MudSelectItem>
+                        <MudSelectItem Value="@fileStore">@fileStore.Name</MudSelectItem>
                     }
                 </MudSelect>
+                @if (fileStoreM is not null)
+                {
+                    <MudSelect @bind-Value="@Model.CabinetId"
+                               For="()=>Model.CabinetId"
+                               Class="mb-4"
+                               Style="min-width:300px;"
+                               Label="File Cabinet"
+                               Variant="Variant.Outlined"
+                                  FullWidth>
+                    <MudSelectItem Value="Guid.Empty">No cabinet selected</MudSelectItem>
+                    @foreach (var cabinet in fileStoreM.Cabinets)
+                        {
+                            <MudSelectItem Value="@cabinet.Id">@cabinet.Name</MudSelectItem>
+                        }
+                    </MudSelect>
+                }
             }
         </DialogContent>
         <DialogActions>
@@ -59,12 +75,14 @@
 
     [Parameter]
     public Cabinet? Cabinet { get; set; }
-    IEnumerable<Cabinet> cabinets = Enumerable.Empty<Cabinet>();
+
+    FileStore? fileStoreM = default;
+    IEnumerable<FileStore> fileStores = Enumerable.Empty<FileStore>();
     protected override void OnInitialized()
     {
         if (Cabinet is null)
         {
-            cabinets = cabinetService.GetAll().ToList();
+            fileStores = fileStoreService.GetAll().Include(x => x.Cabinets).ToList();
         }
         else { }
         if (!IsEditing)

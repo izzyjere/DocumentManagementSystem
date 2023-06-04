@@ -1,10 +1,11 @@
 ﻿@page "/documents/cabinets"
 @using Microsoft.EntityFrameworkCore;
 <MudGrid>
-    <MudItem xs="3">
+    <MudItem xs="8">
         <h3>@pageContext</h3>       
     </MudItem> 
-    <MudItem xs="3">
+    <MudItem xs="2"></MudItem>
+    <MudItem Class="pl-4" xs="2">
         @if (Store is not null)
         {
             <MudButton Class="ml-4" OnClick='async()=>await JavaScriptRuntime.InvokeVoidAsync("window.location.replace","/documents/cabinets")' Style="text-transform:none" Color="Color.Info">View All</MudButton>
@@ -27,7 +28,7 @@
                             </MudItem>
                             <MudItem xs="7">
                                 <MudText GutterBottom Class="mt-4 ml-3" Typo="Typo.h6">
-                                    <b>@cabinet.Name</b>
+                                    <b>@cabinet.Name</b><br/>
                                     <MudChip @onclick='()=>NavManager.NavigateTo($"documents/cabinets?store={cabinet.FileStoreId}",true)' Label Icon="@Icons.Material.Outlined.Storage" Size="Size.Small">@cabinet.FileStore.ShortName</MudChip>
                                 </MudText>
                                 <MudText @onclick='()=>NavManager.NavigateTo($"documents/libraries?cabinet={cabinet.Id}",true)' Style="cursor:pointer" Class="ml-3 mt-2" Typo="Typo.subtitle1">@(cabinet.Libraries?.Count??0) Libraries</MudText>

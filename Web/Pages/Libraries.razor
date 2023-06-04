@@ -1,12 +1,13 @@
 ﻿@page "/documents/libraries"
 @using Microsoft.EntityFrameworkCore;
-<MudGrid>
-    <MudItem xs="3">
+<MudGrid Justify="Justify.SpaceBetween">
+    <MudItem xs="8">
         <h3>@pageContext</h3>
     </MudItem>
-    <MudItem xs="3">
+    <MudItem xs="2"></MudItem>
+    <MudItem Class="pl-4" xs="2">
         @if (Cabinet is not null)
-        {
+        {   
             <MudButton Class="ml-4" OnClick='async()=>await JavaScriptRuntime.InvokeVoidAsync("window.location.replace","/documents/libraries")' Style="text-transform:none" Color="Color.Info">View All</MudButton>
         }
     </MudItem>
@@ -26,7 +27,7 @@
                             </MudItem>
                             <MudItem xs="7">
                                 <MudText GutterBottom Class="mt-4 ml-3" Typo="Typo.h6">
-                                    <b>@library.Name</b>
+                                    <b>@library.Name</b><br/>
                                     <MudChip @onclick='()=>NavManager.NavigateTo($"documents/libraries?cabinet={library.CabinetId}",true)' Label Icon="@Icons.Material.Outlined.Layers" Size="Size.Small">@library.Cabinet.Code</MudChip>
                                     <MudChip Label Icon="@Icons.Material.Outlined.Storage" Size="Size.Small">@library.Cabinet.FileStore.ShortName</MudChip>
                                 </MudText>
@@ -74,7 +75,7 @@
     {
         if (!string.IsNullOrEmpty(CabinetId))
         {
-            Cabinet = cabinetService.GetById(Guid.Parse(CabinetId));
+            Cabinet = cabinetService.GetAll().Include(x=>x.FileStore).FirstOrDefault(x=>x.Id==Guid.Parse(CabinetId));
 
             if (Cabinet is not null)
             {
@@ -82,7 +83,7 @@
                                          .Include(x => x.Documents)
                                          .Include(x => x.Cabinet)
                                          .Where(x => x.CabinetId == Cabinet.Id).ToList();
-                pageContext = $"{Cabinet.Name} : Libraries";
+                pageContext = $"{Cabinet.FileStore.Name} : {Cabinet.Name} : Libraries";
             }
 
 
