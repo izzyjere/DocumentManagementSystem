@@ -59,5 +59,6 @@ namespace RTSADocs.Data
         {
             Console.WriteLine(exception.Message + exception.StackTrace);
         }
+
     }
 }

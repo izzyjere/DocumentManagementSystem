@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 using MudBlazor.Services;
 
+using RTSADocs;
 using RTSADocs.Authentication;
 using RTSADocs.Data;
 using RTSADocs.Data.Services;
@@ -42,8 +43,8 @@ app.UseStaticFiles();
 app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
+app.MigrateDb();
 app.UseSimpleAuthentication();
 app.MapBlazorHub();
 app.MapFallbackToPage("/_Host");
-
 app.Run();
