@@ -1,5 +1,5 @@
 ﻿@using Microsoft.EntityFrameworkCore;
-<EditForm Model="@Model">
+<EditForm OnValidSubmit="Submit" Model="@Model">
     <DataAnnotationsValidator />
     <MudDialog>
         <DialogContent>
@@ -71,9 +71,9 @@
                                     <MudList Clickable>
                                         @if (pageFiles.Any())
                                         {
-                                            @foreach (var file in pageFiles)
+                                            @foreach (var file in fileNames)
                                             {
-                                                <MudListItem Dense="true" Icon="@Icons.Custom.FileFormats.FileDocument">@file.Name</MudListItem>
+                                                <MudListItem Dense="true" Icon="@Icons.Custom.FileFormats.FileDocument">@file</MudListItem>
                                             }
 
                                         }
@@ -87,7 +87,6 @@
                             </ButtonTemplate>
                         </MudFileUpload>
                         <MudToolBar DisableGutters="true" Class="gap-4">
-                            <MudButton OnClick="Upload" Disabled="@(!pageFiles.Any())" Color="Color.Primary" Variant="Variant.Filled">Upload</MudButton>
                             <MudButton OnClick="Clear" Disabled="@(!pageFiles.Any())" Color="Color.Error" Variant="Variant.Filled">Clear</MudButton>
                         </MudToolBar>
                     </MudStack>
@@ -131,7 +130,11 @@
         {
             Model = new();
             Model.Pages = new();
-        }else{}
+        }
+        else
+        {
+            fileNames = Model.Pages.Select(f => f.FileName).ToList(); 
+        }
         LoadData();
     }
 
@@ -160,6 +163,7 @@
         foreach (var file in files)
         {
             pageFiles.Add(file);
+            fileNames.Add(file.Name);
         }
         StateHasChanged();
     }
@@ -167,44 +171,55 @@
     private async Task Clear()
     {
         pageFiles.Clear();
+        Model.Pages.Clear();
+        fileNames.Clear();
         ClearDragClass();
         await Task.Delay(100);
     }
-    private async Task Upload()
+    private async Task<bool> Upload()
     {
-        if (fileStore is null || Model.LibraryId == Guid.Empty)
+        try
         {
-            snackBar.Add("No filestore choosen!", Severity.Error);
-            return;
-        }
-        foreach (var file in pageFiles)
-        {
-            if (file.Size>20000000L)
+            if (fileStore is null || Model.LibraryId == Guid.Empty)
             {
-                snackBar.Add("File too big. Maximum size allowed is 20 mbs.", Severity.Error);
-                return;
+                snackBar.Add("No filestore choosen!", Severity.Error);
+                return false;
             }
-            var fileStream = file.OpenReadStream(20000000L);
-            var ms = new MemoryStream();
-            await fileStream.CopyToAsync(ms);
-            var result = await fileSystemService.WriteFileToStore(ms, fileStore.Path);
-            if (!result.Succeeded)
+            foreach (var file in pageFiles)
             {
-                snackBar.Add($"Failed to upload {file.Name}. Try again", Severity.Error);
-                continue;
-            }
-            var page = new PageFile
+                if (file.Size>20000000L)
                 {
-                    FileName = file.Name,
-                    Format = Path.GetExtension(file.Name),
-                    Path = result.Data,
-                    DateUploaded = DateTime.Now
-                };
-            Model.Pages.Add(page);          
+                    snackBar.Add("File too big. Maximum size allowed is 20 mbs.", Severity.Error);
+                    continue;
+                }
+                var fileStream = file.OpenReadStream(20000000L);
+                var ms = new MemoryStream();
+                await fileStream.CopyToAsync(ms);
+                var result = await fileSystemService.WriteFileToStore(ms, fileStore.Path);
+                if (!result.Succeeded)
+                {
+                    snackBar.Add($"Failed to upload {file.Name}. Try again", Severity.Error);
+                    continue;
+                }
+                var page = new PageFile
+                    {
+                        FileName = file.Name,
+                        Format = Path.GetExtension(file.Name),
+                        Path = result.Data,
+                        DateUploaded = DateTime.Now
+                    };
+                Model.Pages.Add(page);
+            }
+            //Upload the files here
+            snackBar.Configuration.PositionClass = Defaults.Classes.Position.TopCenter;
+            snackBar.Add($"{pageFiles.Count}: Files uploaded!", Severity.Info);
+            return true;
         }
-        //Upload the files here
-        snackBar.Configuration.PositionClass = Defaults.Classes.Position.TopCenter;
-        snackBar.Add($"{pageFiles.Count}: Files uploaded!", Severity.Info);
+        catch (Exception)
+        {
+            return false;
+        }
+
     }
 
     private void SetDragClass()
@@ -215,5 +230,28 @@
     private void ClearDragClass()
     {
         DragClass = DefaultDragClass;
+    }
+    async Task Submit()
+    {
+
+        if(!await Upload())
+        {
+            return;
+        } 
+        if (!Model.Pages.Any())
+        {
+            snackBar.Add("Error: No documents uploaded.", Severity.Error);
+            return;
+        }
+        Model.SubmittedBy = (await userService.GetCurrentUserAsync()).UserName;
+        if (documentService.Save(Model))
+        {
+            snackBar.Add("Document saved.",Severity.Success);
+            Dialog.Close();
+        }
+        else
+        {
+            snackBar.Add("Failed to save ducument", Severity.Error);
+        }
     }
 }

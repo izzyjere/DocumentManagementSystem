@@ -13,10 +13,7 @@ namespace RTSADocs.Shared.Models
         public string Status { get; set; } = Constants.Status.CREATE;
         public DateTime SubmittedOn { get; set; }
         public string Code { get; set; }
-        public Guid LibraryId { get; set; }
-        public Guid SourceId { get; set; }
-        [ForeignKey(nameof(SourceId))]
-        public DocumentSource Source { get; set; }
+        public Guid LibraryId { get; set; }         
         public Library Library { get; set; }
         public List<PageFile> Pages { get; set; }
 

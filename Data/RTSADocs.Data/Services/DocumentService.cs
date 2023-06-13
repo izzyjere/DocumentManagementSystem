@@ -1,5 +1,7 @@
 ﻿global using RTSADocs.Shared.Models;
 
+using Microsoft.EntityFrameworkCore;
+
 using RTSADocs.Data.DataAccess;
 using RTSADocs.Shared.Constants;
 
@@ -14,9 +16,12 @@ namespace RTSADocs.Data.Services
 
         public IEnumerable<Document> Search(string query)
         {
-            return GetAll().Where(d => d.Code.Contains(query)||
+            return GetAll().Include(d => d.Library).ThenInclude(l => l.Cabinet).Where(d => d.Code.Contains(query)||
                                              d.Description.Contains(query)||
-                                             d.Source.Name.Contains(query)||
-                                             d.Source.Description.Contains(query));         }
+                                             d.Library.Name.Contains(query) ||
+                                             d.Library.Code.Contains(query) ||
+                                             d.Library.Cabinet.Code.Contains(query) ||
+                                             d.Library.Cabinet.Name.Contains(query));
+        }
     }
 }
