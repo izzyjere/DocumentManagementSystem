@@ -37,7 +37,7 @@ namespace RTSADocs.Services
             var finalStructure = "";
             for (int i = 0; i < depth; i++)
             {
-                finalStructure += $"\\  {Guid.NewGuid().ToString()[..8]}";
+                finalStructure += $"\\{Guid.NewGuid().ToString()[..8]}";
             }
             return finalStructure;
         }
@@ -47,10 +47,18 @@ namespace RTSADocs.Services
             {
                 var randomFolder = GenerateRandomStructure(4);
                 var fileName = Guid.NewGuid().ToString() + ".dms";
-                var filePath = Path.Combine(fileStore, randomFolder, fileName);
-                var fileStreem = File.OpenWrite(Path.Combine(FileSystemRootMain, filePath));
-                await memoryStream.CopyToAsync(fileStreem);
-                return Result<string>.Success(filePath);
+                var path = Path.Combine(fileStore, randomFolder);
+                var filePath = Path.Combine(FileSystemRootMain + path);
+                if (!Directory.Exists(filePath))
+                {
+                    Directory.CreateDirectory(filePath);
+                }
+                else { }
+                var fullPath = Path.Combine(filePath, fileName);
+                FileStream fileStream = new(fullPath, FileMode.Create, FileAccess.Write);
+
+                await Task.Run(()=>memoryStream.WriteTo(fileStream));                
+                return Result<string>.Success(Path.Combine(path,fileName));
             }
             catch (Exception e)
             {

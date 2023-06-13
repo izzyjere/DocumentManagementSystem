@@ -200,11 +200,11 @@
                     Path = result.Data,
                     DateUploaded = DateTime.Now
                 };
-            Model.Pages.Add(page);
+            Model.Pages.Add(page);          
         }
         //Upload the files here
         snackBar.Configuration.PositionClass = Defaults.Classes.Position.TopCenter;
-        snackBar.Add("TODO: Upload your files!", Severity.Normal);
+        snackBar.Add($"{pageFiles.Count}: Files uploaded!", Severity.Info);
     }
 
     private void SetDragClass()
