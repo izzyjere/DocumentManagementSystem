@@ -1,5 +1,6 @@
 ﻿@page "/documents/files"
 @using Microsoft.EntityFrameworkCore;
+<PageTitle>RTSA || Files</PageTitle>
 <MudGrid>
     <MudItem xs="8">
         <h3>@pageContext</h3>
@@ -13,7 +14,10 @@
     </MudItem>
 </MudGrid>
 <PageContent>
+     <MudItem xs="12"><MudButton OnClick="Create" Variant="Variant.Outlined" FullWidth StartIcon="@Icons.Material.Filled.CreateNewFolder">Create a Document</MudButton></MudItem>
+    <MudGrid Style="max-height:70vh; overflow:scroll;" Class="mt-6">
 
+    </MudGrid>
 </PageContent>
 @code {
     [Parameter]
@@ -63,7 +67,7 @@
     }
     async void Create()
     {
-        var dialog = dialogService.Show<CreateEditDocumentModal>("Create new document.", new DialogParameters { ["Library"] = Library });
+        var dialog = dialogService.Show<CreateEditDocumentModal>("Create new document.", new DialogParameters { ["Library"] = Library },new DialogOptions { FullWidth=true , MaxWidth=MaxWidth.Large, Position=DialogPosition.TopCenter });
         var result = await dialog.Result;
         if (!result.Canceled)
         {
@@ -72,7 +76,7 @@
     }
     async void Edit(Document record)
     {
-        var dialog = dialogService.Show<CreateEditDocumentModal>($"Edit:  {record.Description}", new DialogParameters { ["Model"]=record, ["Library"]=record.Library, ["IsEditing"]=true });
+        var dialog = dialogService.Show<CreateEditDocumentModal>($"Edit:  {record.Description}", new DialogParameters { ["Model"]=record, ["Library"]=record.Library, ["IsEditing"]=true }, new DialogOptions { FullWidth=true, MaxWidth=MaxWidth.Large, Position=DialogPosition.TopCenter });
         var result = await dialog.Result;
         if (!result.Canceled)
         {

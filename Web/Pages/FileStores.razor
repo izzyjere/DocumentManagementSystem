@@ -1,8 +1,8 @@
 ﻿@page "/documents/stores"
 @using Microsoft.EntityFrameworkCore;
-<PageTitle>RTSADocs | Files Stores</PageTitle>
+<PageTitle>RTSA || Files Stores</PageTitle>
 <h3>FileStores</h3>
-<PageContent>
+<PageContent PageTitle="File Stores">
     <MudItem xs="12"><MudButton OnClick="Create" Variant="Variant.Outlined" FullWidth StartIcon="@Icons.Material.Filled.CreateNewFolder">Create a File Store</MudButton></MudItem>
     <MudGrid Class="mt-6">
         @if (fileStores.Any())
