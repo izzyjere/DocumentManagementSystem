@@ -57,7 +57,7 @@
                         </MudItem>
                         <MudItem xs="12">
                             <MudTextField Variant=Variant.Outlined For="()=>Model.Code" Label="Code" @bind-Value="Model.Code" />
-                        </MudItem>                     
+                        </MudItem>
 
                     </MudGrid>
                 </MudItem>
@@ -87,7 +87,7 @@
                             </ButtonTemplate>
                         </MudFileUpload>
                         <MudToolBar DisableGutters="true" Class="gap-4">
-                            <MudButton OnClick="Clear" Disabled="@(!pageFiles.Any())" Color="Color.Error" Variant="Variant.Filled">Clear</MudButton>
+                            <MudButton OnClick="Clear" Disabled="@(!pageFiles.Any()&&!fileNames.Any())" Color="Color.Error" Variant="Variant.Filled">Clear</MudButton>
                         </MudToolBar>
                     </MudStack>
                 </MudItem>
@@ -135,7 +135,7 @@
         else
         {
             fileNames = Model.Pages.Select(f => f.FileName).ToList();
-            
+
             StateHasChanged();
         }
         LoadData();
@@ -165,6 +165,16 @@
         var files = e.GetMultipleFiles();
         foreach (var file in files)
         {
+            if (file.ContentType!="application/pdf")
+            {
+                snackBar.Add("Invalid file format. Only pdf files are supported.", Severity.Error);
+                continue;
+            }
+            if (file.Size>50000000L)
+            {
+                snackBar.Add("File too big. Maximum size allowed is 50 mbs.", Severity.Error);
+                continue;
+            }
             pageFiles.Add(file);
             fileNames.Add(file.Name);
         }
@@ -190,12 +200,8 @@
             }
             foreach (var file in pageFiles)
             {
-                if (file.Size>20000000L)
-                {
-                    snackBar.Add("File too big. Maximum size allowed is 20 mbs.", Severity.Error);
-                    continue;
-                }
-                var fileStream = file.OpenReadStream(20000000L);
+
+                var fileStream = file.OpenReadStream(50000000L);
                 var ms = new MemoryStream();
                 await fileStream.CopyToAsync(ms);
                 var result = await fileSystemService.WriteFileToStore(ms, fileStore.Path);
@@ -237,19 +243,19 @@
     async Task Submit()
     {
 
-        if(!await Upload())
+        if (!await Upload())
         {
             return;
-        } 
+        }
         if (!Model.Pages.Any())
         {
             snackBar.Add("Error: No documents uploaded.", Severity.Error);
             return;
         }
-        Model.SubmittedBy = (await userService.GetCurrentUserAsync()).UserName;       
+        Model.SubmittedBy = (await userService.GetCurrentUserAsync()).UserName;
         if (documentService.Save(Model))
         {
-            snackBar.Add("Document saved.",Severity.Success);
+            snackBar.Add("Document saved.", Severity.Success);
             Dialog.Close();
         }
         else
