@@ -1,34 +1,44 @@
-﻿using RTSADocs.Data;
+﻿using Humanizer;
+using Microsoft.VisualBasic;
+
+using RTSADocs.Data;
 using RTSADocs.Data.Services;
 using RTSADocs.Shared.DTOs;
 using RTSADocs.Shared.Models;
 using RTSADocs.Shared.Services;
+using static MudBlazor.Colors;
+using static System.Runtime.InteropServices.JavaScript.JSType;
+using System.Diagnostics.Contracts;
+
+using System.IO;
+
+using System.Security.Policy;
 
 namespace RTSADocs.Services
 {
-    internal class LocalFileSystemService  : IFileSystemService
+    internal class LocalFileSystemService : IFileSystemService
     {
         public string FileSystemRootMain => "C:\\ProgramData\\Codelabs\\DMS\\FileStores\\Main";
         public string FileSystemRootArchive => "C:\\ProgramData\\Codelabs\\DMS\\FileStores\\Archive";
-      
+
         public LocalFileSystemService()
         {
-           Init();
+            Init();
         }
         private void Init()
         {
-            if(!Directory.Exists(FileSystemRootMain))
+            if (!Directory.Exists(FileSystemRootMain))
             {
                 Directory.CreateDirectory(FileSystemRootMain);
             }
-            if(!Directory.Exists(FileSystemRootArchive))
+            if (!Directory.Exists(FileSystemRootArchive))
             {
                 Directory.CreateDirectory(FileSystemRootArchive);
             }
         }
         public Task<string> InitializeFileStore()
         {
-            var folderName = GenerateRandomStructure();            
+            var folderName = GenerateRandomStructure();
             return Task.FromResult(folderName);
         }
         private string GenerateRandomStructure(int maxDepth = 6)
@@ -57,8 +67,8 @@ namespace RTSADocs.Services
                 var fullPath = Path.Combine(filePath, fileName);
                 FileStream fileStream = new(fullPath, FileMode.Create, FileAccess.Write);
 
-                await Task.Run(()=>memoryStream.WriteTo(fileStream));                
-                return Result<string>.Success(Path.Combine(path,fileName));
+                await Task.Run(() => memoryStream.WriteTo(fileStream));
+                return Result<string>.Success(Path.Combine(path, fileName));
             }
             catch (Exception e)
             {
@@ -106,7 +116,7 @@ namespace RTSADocs.Services
                 FileSource.archive => Path.Combine(FileSystemRootArchive, filePath),
                 _ => throw new InvalidOperationException("Unknown filestore source")
             };
-            if(File.Exists(finalPath))
+            if (File.Exists(finalPath))
             {
                 var fileStream = File.OpenRead(finalPath);
                 await fileStream.CopyToAsync(memoryStream);
@@ -114,21 +124,41 @@ namespace RTSADocs.Services
             }
             return Result<MemoryStream>.Failure("File not found.");
         }
+        public string ReadFileFromFileStoreAsBlob(string path, FileSource source)
+        {
+            var finalPath = source switch
+            {
+                FileSource.main => Path.Combine(FileSystemRootMain+ path),
+                FileSource.archive => Path.Combine(FileSystemRootArchive+ path),
+                _ => throw new InvalidOperationException("Unknown filestore source")
+            };
+
+            if (File.Exists(finalPath))
+            {
+                var fileBytes = File.ReadAllBytes(finalPath);
+                var base64String = Convert.ToBase64String(fileBytes);
+                var mimeType = "application/pdf";
+                var dataUrl = $"data:{mimeType};base64,{base64String}";
+                return dataUrl;
+            }
+
+            throw new InvalidOperationException("File not found in  source");
+        } 
         public Result DecryptFile(string filePath, FileSource source)
         {
             try
             {
-                
+
                 return Result.Success("File Decrypted.");
             }
             catch (Exception e)
             {
-                e.PrintStackTrace();  
+                e.PrintStackTrace();
                 return Result.Failure("File Decryption failed.");
             }
-        
+
         }
-        public Result EncryptFile(string filePath, FileSource source) 
+        public Result EncryptFile(string filePath, FileSource source)
         {
             try
             {
@@ -136,7 +166,7 @@ namespace RTSADocs.Services
             }
             catch (Exception e)
             {
-                e.PrintStackTrace();  
+                e.PrintStackTrace();
                 return Result.Failure("File Decryption failed.");
             }
         }

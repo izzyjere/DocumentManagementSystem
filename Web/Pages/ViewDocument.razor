@@ -1,0 +1,62 @@
+﻿@page "/documents/files/view"
+@using Microsoft.EntityFrameworkCore;
+
+@if (Model!=null)
+{
+    <h3>View : @Model.Library.Cabinet.Code : @Model.Library.Code : @Model.Title</h3>
+    <PageContent Style="padding:20px" PageTitle="View Document">
+        <MudTabs Border>
+        @foreach (var file in Model.Pages)
+        {
+            <MudTabPanel Icon="@Icons.Custom.FileFormats.FilePdf" Text="@file.FileName">
+                <DocumentViewer Style="min-width:100%;min-height:100%;" Src="@fileSystemService.ReadFileFromFileStoreAsBlob(file.Path, FileSource.main)" />
+            </MudTabPanel>
+        }
+        </MudTabs>
+    </PageContent>
+}
+else
+{
+    <MudAlert Severity="Severity.Error">Not Found! Invalid document identifier.</MudAlert>
+}
+
+
+@code {
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "id")]
+    public string Id { get; set; }
+
+    Document? Model = default;
+    protected override void OnInitialized()
+    {
+        LayoutService.Breadcrumbs.Clear();
+        LayoutService.Breadcrumbs.Add(new BreadcrumbItem(text: "Dashboard", href: "dashboard", icon: Icons.Material.Outlined.Dashboard));
+        LayoutService.Breadcrumbs.Add(new BreadcrumbItem(text: "View Document", href: "documents/files/view/#", icon: Icons.Material.Outlined.Dashboard));
+
+        try
+        {
+            if (string.IsNullOrEmpty(Id))
+            {
+                snackBar.Add("Invalid Request!", Severity.Error);
+                NavManager.NavigateTo("/dashboard", true);
+            }
+            else
+            {
+                Model = documentService.GetAll()
+                                          .Include(d => d.Pages)
+                                          .Include(d => d.Library)
+                                          .ThenInclude(l => l.Cabinet)
+                                          .ThenInclude(c => c.FileStore)
+                                          .FirstOrDefault(x => x.Id == Guid.Parse(Id));
+                StateHasChanged();
+            }
+
+        }
+        catch (Exception)
+        {
+
+        }
+        
+    }
+    
+}

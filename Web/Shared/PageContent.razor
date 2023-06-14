@@ -1,4 +1,4 @@
-﻿<MudPaper Width="100%" Class="mt-6 pa-4 pt-6" MinHeight="70vh">
+﻿<MudPaper Style="@Style" Width="100%" Class="mt-6 pa-4 pt-6" MinHeight="70vh">
     @ChildContent
 </MudPaper>
 <PageTitle>E-Registry || @PageTitle </PageTitle>
@@ -7,4 +7,6 @@
     public RenderFragment ChildContent { get; set; }
     [Parameter]
     public string PageTitle { get; set; }
+    [Parameter]
+    public string Style { get; set; }
 }
