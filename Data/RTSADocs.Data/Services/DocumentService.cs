@@ -16,8 +16,14 @@ namespace RTSADocs.Data.Services
 
         public IEnumerable<Document> Search(string query)
         {
-            return GetAll().Include(d => d.Library).ThenInclude(l => l.Cabinet).Where(d => d.Code.Contains(query)||
+            return GetAll()
+                 .Include(d => d.Pages)
+                                          .Include(d => d.Library)
+                                          .ThenInclude(l => l.Cabinet)
+                                          .ThenInclude(c => c.FileStore)
+                .Where(d => d.Code.Contains(query)||
                                              d.Description.Contains(query)||
+                                             d.Pages.Any(p=>p.FileName.Contains(query))||
                                              d.Library.Name.Contains(query) ||
                                              d.Library.Code.Contains(query) ||
                                              d.Library.Cabinet.Code.Contains(query) ||

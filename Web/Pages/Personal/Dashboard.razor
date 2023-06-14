@@ -1,154 +1,134 @@
 ﻿@page "/dashboard"
+@using Microsoft.EntityFrameworkCore;
 <PageTitle>RTSA || Dashboard</PageTitle>
 <MudText Typo="Typo.h5" Color="Color.Primary" Class="mb-4">Dashboard</MudText>
 <MudGrid>
     <MudItem xs="12" sm="6" md="3">
-        <MudPaper @onclick='()=>NavManager.NavigateTo("documents/files",true)'  Class="d-flex flex-row pt-6 pb-4" Style="height:100px; cursor:pointer;">
+        <MudPaper @onclick='()=>NavManager.NavigateTo("documents/files",true)' Class="d-flex flex-row pt-6 pb-4" Style="height:100px; cursor:pointer;">
             <MudIcon Icon="@Icons.Material.Filled.FilePresent" Color="Color.Primary" Class="mx-4" Style="width:54px; height:54px;"></MudIcon>
             <div>
                 <MudText Typo="Typo.subtitle1" Class="mud-text-secondary mb-n1">Files</MudText>
                 <MudText Typo="Typo.h5">@(dashboardService.Count<Document>())</MudText>
-            </div>
-        </MudPaper>
-    </MudItem>
-    <MudItem xs="12" sm="6" md="3">
-        <MudPaper @onclick='()=>NavManager.NavigateTo("documents/libraries",true)' Class="d-flex flex-row pt-6 pb-4" Style="height:100px; cursor:pointer;">
-            <MudIcon Icon="@Icons.Material.Filled.FolderOpen" Color="Color.Secondary" Class="mx-4" Style="width:54px; height:54px;"></MudIcon>
-            <div>
-                <MudText Typo="Typo.subtitle1" Class="mud-text-secondary mb-n1">Libraries</MudText>
+                </div>
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="3">
+            <MudPaper @onclick='()=>NavManager.NavigateTo("documents/libraries",true)' Class="d-flex flex-row pt-6 pb-4" Style="height:100px; cursor:pointer;">
+                <MudIcon Icon="@Icons.Material.Filled.FolderOpen" Color="Color.Secondary" Class="mx-4" Style="width:54px; height:54px;"></MudIcon>
+                <div>
+                    <MudText Typo="Typo.subtitle1" Class="mud-text-secondary mb-n1">Libraries</MudText>
                     <MudText Typo="Typo.h5">@(dashboardService.Count<Library>())</MudText>
-            </div>
-        </MudPaper>
-    </MudItem>
-    <MudItem xs="12" sm="6" md="3">
-        <MudPaper @onclick='()=>NavManager.NavigateTo("documents/cabinets",true)' Class="d-flex flex-row pt-6 pb-4" Style="height:100px; cursor:pointer;">
-            <MudIcon Icon="@Icons.Material.Filled.Layers" Color="Color.Success" Class="mx-4" Style="width:54px; height:54px;"></MudIcon>
-            <div>
-                <MudText Typo="Typo.subtitle1" Class="mud-text-secondary mb-n1">Cabinets</MudText>
+                </div>
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="3">
+            <MudPaper @onclick='()=>NavManager.NavigateTo("documents/cabinets",true)' Class="d-flex flex-row pt-6 pb-4" Style="height:100px; cursor:pointer;">
+                <MudIcon Icon="@Icons.Material.Filled.Layers" Color="Color.Success" Class="mx-4" Style="width:54px; height:54px;"></MudIcon>
+                <div>
+                    <MudText Typo="Typo.subtitle1" Class="mud-text-secondary mb-n1">Cabinets</MudText>
                     <MudText Typo="Typo.h5">@(dashboardService.Count<Cabinet>())</MudText>
-            </div>
-        </MudPaper>
-    </MudItem>
-    <MudItem xs="12" sm="6" md="3">
-        <MudPaper @onclick='()=>NavManager.NavigateTo("documents/stores",true)' Class="d-flex flex-row pt-6 pb-4" Style="height:100px; cursor:pointer;">
-            <MudIcon Icon="@Icons.Material.Filled.Dataset" Color="Color.Warning" Class="mx-4" Style="width:54px; height:54px;"></MudIcon>
-            <div>
-                <MudText Typo="Typo.subtitle1" Class="mud-text-secondary mb-n1">File Stores</MudText>
+                </div>
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="3">
+            <MudPaper @onclick='()=>NavManager.NavigateTo("documents/stores",true)' Class="d-flex flex-row pt-6 pb-4" Style="height:100px; cursor:pointer;">
+                <MudIcon Icon="@Icons.Material.Filled.Dataset" Color="Color.Warning" Class="mx-4" Style="width:54px; height:54px;"></MudIcon>
+                <div>
+                    <MudText Typo="Typo.subtitle1" Class="mud-text-secondary mb-n1">File Stores</MudText>
                     <MudText Typo="Typo.h5">@(dashboardService.Count<FileStore>())</MudText>
-            </div>
-        </MudPaper>
-    </MudItem>
-    <MudItem xs="12" sm="12" md="6">
-        <MudCard  Style="height:100%;">
-            <MudCardHeader>
-                <CardHeaderContent>
-                    <MudText Typo="Typo.h6">Recent Archieves</MudText>
-                </CardHeaderContent>
+                </div>
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="12">
+            <MudCard Class="m-4 pa-4" Style="border-radius:10px;height:65vh;overflow:hidden;min-width:100%">
+                <MudCardHeader>
+                    <MudTextField Immediate Variant=Variant.Outlined T="string" Label="Search for Documents" FullWidth Class="m-4 mt-4" Adornment=Adornment.End AdornmentIcon="@Icons.Material.Filled.Search" ValueChanged="OnSearch"></MudTextField>
             </MudCardHeader>
-            <MudCardContent Class="px-0">
-                <MudSimpleTable Elevation="0" Hover="true">
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Priority</th>
-                            <th>Earnings</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var report in earningReports.OrderBy(x=>x.Name))
+            <MudCardContent>
+                <MudText Color="Color.Info" Typo="Typo.h6">@searchContext</MudText>
+                <MudGrid Style="max-height:70vh; overflow:scroll;" Class="mt-6">
+                    @if (recentDocuments.Any())
+                    {
+                        foreach (var document in recentDocuments)
                         {
-                            <tr>
-                                <td>
-                                    <div class="d-flex flex-row">
-                                        <MudAvatar Image="@report.Avatar" Class="mud-elevation-25" />
-                                        <div class="ml-6">
-                                            <MudText Typo="Typo.subtitle2">@report.Name</MudText>
-                                            <MudText Typo="Typo.body2">@report.Title</MudText>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td><MudChip Label="true" Color="@report.Severity" Size="Size.Small" Class="ml-auto mud-elevation-25">@report.SeverityTitle</MudChip></td>
-                                <td><MudText>@report.Salary</MudText></td>
-                            </tr>
+                            <MudItem xs="12" sm="6" md="4" Class="mb-4">
+                                <MudPaper Style="border-radius:10px;">
+                                    <MudGrid>
+                                        <MudItem xs="5">
+                                            <MudIcon Color="Color.Tertiary" Icon="@Icons.Custom.FileFormats.FileDocument" Style="height:150px; width:200px;"></MudIcon>
+                                        </MudItem>
+                                        <MudItem xs="7">
+                                            <MudText GutterBottom Class="mt-4 ml-3" Typo="Typo.h6">
+                                                <b>@document.Title</b><br />
+                                                <MudChip @onclick='()=>NavManager.NavigateTo($"documents/files?library={document.LibraryId}",true)' Label Icon="@Icons.Material.Outlined.Layers" Size="Size.Small">@document.Library.Code</MudChip>
+                                                <MudChip Label Icon="@Icons.Material.Outlined.Storage" Size="Size.Small">@document.Library.Cabinet.Code</MudChip>
+                                            </MudText>
+                                            <MudText @onclick='()=>NavManager.NavigateTo($"documents/files/view={document.Id}",true)' Style="cursor:pointer" Class="ml-3 mt-2" Typo="Typo.subtitle1">@(document.Pages?.Count??0) Pages</MudText>
+                                            <MudText Color="Color.Info" GutterBottom Class="ml-3" Typo="Typo.caption">Created On: @document.CreatedOn.ToString("dd MMM yy H:mm")</MudText>
+                                            <div Class="ml-3 mt-2">
+                                                <MudItem xs="12">
+                                                    <MudButton OnClick='()=>NavManager.NavigateTo($"documents/files/view={document.Id}",true)' Style="text-transform:none;" Color="Color.Success" Variant="Variant.Outlined" StartIcon="@Icons.Material.Outlined.DocumentScanner" Size="Size.Small">View</MudButton>
+                                                    <MudButton Class="ml-2" OnClick="()=>Edit(document)" Style="text-transform:none;" Color="Color.Warning" Variant="Variant.Outlined" StartIcon="@Icons.Material.Outlined.Edit" Size="Size.Small">Edit</MudButton>
+                                                </MudItem>
+                                            </div>
+                                        </MudItem>
+                                    </MudGrid>
+                                </MudPaper>
+                            </MudItem>
                         }
-                    </tbody>
-                </MudSimpleTable>
-            </MudCardContent>
-        </MudCard>
-    </MudItem>
-    <MudItem xs="12" sm="12" md="6">
-        <MudCard  Style="height:100%;">
-            <MudCardHeader>
-                <CardHeaderContent>
-                    <MudText Typo="Typo.h6">Recent Uploads</MudText>
-                </CardHeaderContent>
-            </MudCardHeader>
-            <MudCardContent Class="px-0">
-                <MudList Clickable="true">
-                    <MudListItem>
-                        <div class="d-flex flex-row">
-                            <MudAvatar Class="mud-elevation-25">
-                                <MudIcon Icon="@Icons.Custom.Brands.GitHub" Class="mx-4" />
-                            </MudAvatar>
-                            <div class="ml-6">
-                                <MudText Typo="Typo.subtitle2">Issues rising</MudText>
-                                <MudText Typo="Typo.body2">Issues is almost reaching 100</MudText>
-                            </div>
-                            <MudChip Label="true" Color="Color.Error" Size="Size.Small" Class="ml-auto mud-elevation-25">Danger</MudChip>
-                        </div>
-                    </MudListItem>
-                    <MudListItem>
-                        <div class="d-flex flex-row">
-                            <MudAvatar Class="mud-elevation-25">
-                                <MudIcon Icon="@Icons.Custom.Uncategorized.Radioactive" Class="mx-4" />
-                            </MudAvatar>
-                            <div class="ml-6">
-                                <MudText Typo="Typo.subtitle2">Incident in plant number 4</MudText>
-                                <MudText Typo="Typo.body2">Fire in reactor core</MudText>
-                            </div>
-                            <MudChip Label="true" Color="Color.Info" Size="Size.Small" Class="ml-auto mud-elevation-25">Minor</MudChip>
-                        </div>
-                    </MudListItem>
-                    <MudListItem>
-                        <div class="d-flex flex-row">
-                            <MudAvatar Class="mud-elevation-25">
-                                <MudIcon Icon="@Icons.Material.Filled.Person" Class="mx-4" />
-                            </MudAvatar>
-                            <div class="ml-6">
-                                <MudText Typo="Typo.subtitle2">Occupational injury</MudText>
-                                <MudText Typo="Typo.body2">Employee broke a finger while writing some code</MudText>
-                            </div>
-                            <MudChip Label="true" Color="Color.Success" Size="Size.Small" Class="ml-auto mud-elevation-25">Dismissed</MudChip>
-                        </div>
-                    </MudListItem>
-                </MudList>
+                    }
+                    else
+                    {
+
+                        <MudItem xs="12" Class="m-4">
+                            <MudAlert Severity="Severity.Warning">No Documents Found.</MudAlert>
+                        </MudItem>
+                    }
+                </MudGrid>
             </MudCardContent>
         </MudCard>
     </MudItem>
 </MudGrid>
 
 @code {
+
+    IEnumerable<Document> recentDocuments = Enumerable.Empty<Document>();
+    string searchContext = "Recent Uploads";
     protected override void OnInitialized()
     {
         LayoutService.Breadcrumbs.Clear();
         LayoutService.Breadcrumbs.Add(new BreadcrumbItem(text: "Dashboard", href: "dashboard", icon: Icons.Material.Outlined.Dashboard));
+        LoadData();
     }
-
-
-    EarningReport[] earningReports = new EarningReport[]
+    void LoadData()
     {
-        new EarningReport { Name = "Lunees", Title = "Reactor Engineer", Avatar = "https://avatars2.githubusercontent.com/u/71094850?s=460&u=66c16f5bb7d27dc751f6759a82a3a070c8c7fe4b&v=4", Salary = "$0.99", Severity = Color.Success, SeverityTitle = "Low"},
-        new EarningReport { Name = "Mikes-gh", Title = "Developer", Avatar = "https://avatars.githubusercontent.com/u/16208742?s=120&v=4", Salary = "$19.12K", Severity = Color.Secondary, SeverityTitle = "Medium"},
-        new EarningReport { Name = "Garderoben", Title = "CSS Magician", Avatar = "https://avatars2.githubusercontent.com/u/10367109?s=460&amp;u=2abf95f9e01132e8e2915def42895ffe99c5d2c6&amp;v=4", Salary = "$1337", Severity = Color.Primary, SeverityTitle = "High"},
-    };
-
-    class EarningReport
+        recentDocuments = documentService.GetAll()
+                                          .Include(d => d.Pages)
+                                          .Include(d => d.Library)
+                                          .ThenInclude(l => l.Cabinet)
+                                          .ThenInclude(c => c.FileStore)
+                                          .OrderByDescending(d => d.CreatedOn)
+                                          .Take(3).ToList();
+        StateHasChanged();
+    }
+    void OnSearch(string queryString)
     {
-        public string Avatar;
-        public string Name;
-        public string Title;
-        public Color Severity;
-        public string SeverityTitle;
-        public string Salary;
+        if (string.IsNullOrWhiteSpace(queryString))
+        {
+            LoadData();
+            return;
+        }
+        searchContext = $"Search Results for: {queryString}";
+        recentDocuments = documentService.Search(queryString);
+        StateHasChanged();
+    }
+    async void Edit(Document record)
+    {
+        var dialog = dialogService.Show<CreateEditDocumentModal>($"Edit:  {record.Description}", new DialogParameters { ["Model"]=record, ["Library"]=record.Library, ["IsEditing"]=true }, new DialogOptions { FullWidth=true, MaxWidth=MaxWidth.Large, Position=DialogPosition.TopCenter });
+        var result = await dialog.Result;
+        if (!result.Canceled)
+        {
+            LoadData();
+        }
     }
 }

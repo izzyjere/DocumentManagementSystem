@@ -53,7 +53,7 @@
                             <MudTextField Variant=Variant.Outlined For="()=>Model.Title" Label="Title" @bind-Value="Model.Title" />
                         </MudItem>
                         <MudItem xs="12">
-                            <MudTextField Variant=Variant.Outlined For="()=>Model.Description" Label="Description" @bind-Value="Model.Description" />
+                            <MudTextField Lines="3" Variant=Variant.Outlined For="()=>Model.Description" Label="Description" @bind-Value="Model.Description" />
                         </MudItem>
                         <MudItem xs="12">
                             <MudTextField Variant=Variant.Outlined For="()=>Model.Code" Label="Code" @bind-Value="Model.Code" />
@@ -63,17 +63,17 @@
                 </MudItem>
                 <MudItem xs="12" sm="6">
                     <MudStack Style="width: 100%">
-                        <MudFileUpload Context="uploadContext" T="IReadOnlyList<IBrowserFile>" OnFilesChanged="OnInputFileChanged" Hidden="false" Class="flex-1" InputClass="absolute mud-width-full mud-height-full overflow-hidden z-20" InputStyle="opacity:0"
+                        <MudFileUpload Accept=".pdf" Context="uploadContext" T="IReadOnlyList<IBrowserFile>" OnFilesChanged="OnInputFileChanged" Hidden="false" Class="flex-1" InputClass="absolute mud-width-full mud-height-full overflow-hidden z-20" InputStyle="opacity:0"
                         @ondragenter="@SetDragClass" @ondragleave="@ClearDragClass" @ondragend="@ClearDragClass">
                             <ButtonTemplate>
                                 <MudPaper Height="300px" Outlined="true" Class="@DragClass">
-                                    <MudText Typo="Typo.h6">Drag and drop files here or click to upload</MudText>
+                                    <MudText Typo="Typo.h6">Drag and drop pdf files here or click to upload</MudText>
                                     <MudList Clickable>
-                                        @if (pageFiles.Any())
+                                        @if (pageFiles.Any() || fileNames.Any())
                                         {
                                             @foreach (var file in fileNames)
                                             {
-                                                <MudListItem Dense="true" Icon="@Icons.Custom.FileFormats.FileDocument">@file</MudListItem>
+                                                <MudListItem IconColor="Color.Secondary" Dense="true" Icon="@Icons.Custom.FileFormats.FilePdf">@file</MudListItem>
                                             }
 
                                         }
@@ -130,10 +130,13 @@
         {
             Model = new();
             Model.Pages = new();
+            Model.SubmittedOn = DateTime.Now;
         }
         else
         {
-            fileNames = Model.Pages.Select(f => f.FileName).ToList(); 
+            fileNames = Model.Pages.Select(f => f.FileName).ToList();
+            
+            StateHasChanged();
         }
         LoadData();
     }
@@ -243,7 +246,7 @@
             snackBar.Add("Error: No documents uploaded.", Severity.Error);
             return;
         }
-        Model.SubmittedBy = (await userService.GetCurrentUserAsync()).UserName;
+        Model.SubmittedBy = (await userService.GetCurrentUserAsync()).UserName;       
         if (documentService.Save(Model))
         {
             snackBar.Add("Document saved.",Severity.Success);

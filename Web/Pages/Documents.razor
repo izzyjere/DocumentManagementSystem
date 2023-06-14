@@ -6,17 +6,53 @@
         <h3>@pageContext</h3>
     </MudItem>
     <MudItem xs="2"></MudItem>
-    <MudItem  xs="2">
+    <MudItem xs="2">
         @if (Library is not null)
         {
-            <MudButton  OnClick='async()=>await JavaScriptRuntime.InvokeVoidAsync("window.location.replace","/documents/files")' Style="text-transform:none" Color="Color.Info">View All Files</MudButton>
+            <MudButton OnClick='async()=>await JavaScriptRuntime.InvokeVoidAsync("window.location.replace","/documents/files")' Style="text-transform:none" Color="Color.Info">View All Files</MudButton>
         }
     </MudItem>
 </MudGrid>
 <PageContent>
-     <MudItem xs="12"><MudButton OnClick="Create" Variant="Variant.Outlined" FullWidth StartIcon="@Icons.Material.Filled.CreateNewFolder">Create a Document</MudButton></MudItem>
+    <MudItem xs="12"><MudButton OnClick="Create" Variant="Variant.Outlined" FullWidth StartIcon="@Icons.Material.Filled.CreateNewFolder">Create a Document</MudButton></MudItem>
     <MudGrid Style="max-height:70vh; overflow:scroll;" Class="mt-6">
+        @if (documents.Any())
+        {
+            foreach (var document in documents)
+            {
+                <MudItem xs="12" sm="6" md="4" Class="mb-4">
+                    <MudPaper Style="border-radius:10px;">
+                        <MudGrid>
+                            <MudItem xs="5">
+                                <MudIcon Color="Color.Tertiary" Icon="@Icons.Custom.FileFormats.FileDocument" Style="height:150px; width:200px;"></MudIcon>
+                            </MudItem>
+                            <MudItem xs="7">
+                                <MudText GutterBottom Class="mt-4 ml-3" Typo="Typo.h6">
+                                    <b>@document.Title</b><br />
+                                    <MudChip @onclick='()=>NavManager.NavigateTo($"documents/files?library={document.LibraryId}",true)' Label Icon="@Icons.Material.Outlined.Layers" Size="Size.Small">@document.Library.Code</MudChip>
+                                    <MudChip Label Icon="@Icons.Material.Outlined.Storage" Size="Size.Small">@document.Library.Cabinet.Code</MudChip>
+                                </MudText>
+                                <MudText @onclick='()=>NavManager.NavigateTo($"documents/files/view={document.Id}",true)' Style="cursor:pointer" Class="ml-3 mt-2" Typo="Typo.subtitle1">@(document.Pages?.Count??0) Pages</MudText>
+                                <MudText Color="Color.Info" GutterBottom Class="ml-3" Typo="Typo.caption">Created On: @document.CreatedOn.ToString("dd MMM yy H:mm")</MudText>
+                                <div Class="ml-3 mt-2">
+                                    <MudItem xs="12">
+                                        <MudButton OnClick='()=>NavManager.NavigateTo($"documents/files/view={document.Id}",true)' Style="text-transform:none;" Color="Color.Success" Variant="Variant.Outlined" StartIcon="@Icons.Material.Outlined.DocumentScanner" Size="Size.Small">View</MudButton>
+                                        <MudButton Class="ml-2" OnClick="()=>Edit(document)" Style="text-transform:none;" Color="Color.Warning" Variant="Variant.Outlined" StartIcon="@Icons.Material.Outlined.Edit" Size="Size.Small">Edit</MudButton>
+                                    </MudItem>
+                                </div>
+                            </MudItem>
+                        </MudGrid>
+                    </MudPaper>
+                </MudItem>
+            }
+        }
+        else
+        {
 
+            <MudItem xs="12" Class="m-4">
+                <MudAlert Severity="Severity.Warning">No Documents Found.</MudAlert>
+            </MudItem>
+        }
     </MudGrid>
 </PageContent>
 @code {
@@ -47,9 +83,11 @@
             if (Library is not null)
             {
                 documents = documentService.GetAll()
-                                         .Include(x => x.Library)
-                                         .ThenInclude(x => x.Cabinet)
-                                         .ThenInclude(x => x.FileStore)
+                                          .Include(d => d.Pages)
+                                          .Include(d => d.Library)
+                                          .ThenInclude(l => l.Cabinet)
+                                          .ThenInclude(c => c.FileStore)
+                                          .OrderByDescending(d => d.CreatedOn)
                                          .Where(x => x.LibraryId == Library.Id).ToList();
                 pageContext = $"{Library.Cabinet.FileStore.Name} : {Library.Cabinet.Name} : {Library.Name} : Files";
             }
@@ -59,15 +97,17 @@
         else
         {
             documents = documentService.GetAll()
-                                         .Include(x => x.Library)
-                                         .ThenInclude(x => x.Cabinet)
-                                         .ThenInclude(x => x.FileStore).ToList();
+                                         .Include(d => d.Pages)
+                                          .Include(d => d.Library)
+                                          .ThenInclude(l => l.Cabinet)
+                                          .ThenInclude(c => c.FileStore)
+                                          .OrderByDescending(d => d.CreatedOn).ToList();
         }
         StateHasChanged();
     }
     async void Create()
     {
-        var dialog = dialogService.Show<CreateEditDocumentModal>("Create new document.", new DialogParameters { ["Library"] = Library },new DialogOptions { FullWidth=true , MaxWidth=MaxWidth.Large, Position=DialogPosition.TopCenter });
+        var dialog = dialogService.Show<CreateEditDocumentModal>("Create new document.", new DialogParameters { ["Library"] = Library }, new DialogOptions { FullWidth=true, MaxWidth=MaxWidth.Large, Position=DialogPosition.TopCenter });
         var result = await dialog.Result;
         if (!result.Canceled)
         {
