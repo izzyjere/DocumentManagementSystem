@@ -67,7 +67,7 @@
                                             <MudText Color="Color.Info" GutterBottom Class="ml-3" Typo="Typo.caption">Created On: @document.CreatedOn.ToString("dd MMM yy H:mm")</MudText>
                                             <div Class="ml-3 mt-2">
                                                 <MudItem xs="12">
-                                                    <MudButton OnClick='()=>NavManager.NavigateTo($"documents/files/view={document.Id}",true)' Style="text-transform:none;" Color="Color.Success" Variant="Variant.Outlined" StartIcon="@Icons.Material.Outlined.DocumentScanner" Size="Size.Small">View</MudButton>
+                                                    <MudButton OnClick='()=>NavManager.NavigateTo($"documents/files/view?id={document.Id}",true)' Style="text-transform:none;" Color="Color.Success" Variant="Variant.Outlined" StartIcon="@Icons.Material.Outlined.DocumentScanner" Size="Size.Small">View</MudButton>
                                                     <MudButton Class="ml-2" OnClick="()=>Edit(document)" Style="text-transform:none;" Color="Color.Warning" Variant="Variant.Outlined" StartIcon="@Icons.Material.Outlined.Edit" Size="Size.Small">Edit</MudButton>
                                                 </MudItem>
                                             </div>

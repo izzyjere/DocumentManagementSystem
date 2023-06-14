@@ -1,6 +1,5 @@
 ﻿@page "/documents/files"
 @using Microsoft.EntityFrameworkCore;
-<PageTitle>RTSA || Files</PageTitle>
 <MudGrid>
     <MudItem xs="8">
         <h3>@pageContext</h3>
@@ -13,7 +12,7 @@
         }
     </MudItem>
 </MudGrid>
-<PageContent>
+<PageContent PageTitle="Documents">
     <MudItem xs="12"><MudButton OnClick="Create" Variant="Variant.Outlined" FullWidth StartIcon="@Icons.Material.Filled.CreateNewFolder">Create a Document</MudButton></MudItem>
     <MudGrid Style="max-height:70vh; overflow:scroll;" Class="mt-6">
         @if (documents.Any())
@@ -36,7 +35,7 @@
                                 <MudText Color="Color.Info" GutterBottom Class="ml-3" Typo="Typo.caption">Created On: @document.CreatedOn.ToString("dd MMM yy H:mm")</MudText>
                                 <div Class="ml-3 mt-2">
                                     <MudItem xs="12">
-                                        <MudButton OnClick='()=>NavManager.NavigateTo($"documents/files/view={document.Id}",true)' Style="text-transform:none;" Color="Color.Success" Variant="Variant.Outlined" StartIcon="@Icons.Material.Outlined.DocumentScanner" Size="Size.Small">View</MudButton>
+                                        <MudButton OnClick='()=>NavManager.NavigateTo($"documents/files/view?id={document.Id}",true)' Style="text-transform:none;" Color="Color.Success" Variant="Variant.Outlined" StartIcon="@Icons.Material.Outlined.DocumentScanner" Size="Size.Small">View</MudButton>
                                         <MudButton Class="ml-2" OnClick="()=>Edit(document)" Style="text-transform:none;" Color="Color.Warning" Variant="Variant.Outlined" StartIcon="@Icons.Material.Outlined.Edit" Size="Size.Small">Edit</MudButton>
                                     </MudItem>
                                 </div>

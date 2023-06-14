@@ -1,6 +1,5 @@
 ﻿@page "/documents/libraries"
 @using Microsoft.EntityFrameworkCore;
-<PageTitle>RTSA || Libraries</PageTitle>
 <MudGrid Justify="Justify.SpaceBetween">
     <MudItem xs="8">
         <h3>@pageContext</h3>
@@ -13,7 +12,7 @@
         }
     </MudItem>
 </MudGrid>
-<PageContent>
+<PageContent PageTitle="Libraries">
     <MudItem xs="12"><MudButton OnClick="Create" Variant="Variant.Outlined" FullWidth StartIcon="@Icons.Material.Filled.CreateNewFolder">Create a Library</MudButton></MudItem>
     <MudGrid Style="max-height:70vh; overflow:scroll;" Class="mt-6">
         @if (libraries.Any())

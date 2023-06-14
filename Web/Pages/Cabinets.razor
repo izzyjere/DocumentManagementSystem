@@ -1,6 +1,5 @@
 ﻿@page "/documents/cabinets"
 @using Microsoft.EntityFrameworkCore;
-<PageTitle>RTSA || Cabinets</PageTitle>
 <MudGrid>
     <MudItem xs="8">
         <h3>@pageContext</h3>       
@@ -14,7 +13,7 @@
     </MudItem>
  </MudGrid>
 
-<PageContent>
+<PageContent PageTitle="Cabinets">
     <MudItem xs="12"><MudButton OnClick="Create" Variant="Variant.Outlined" FullWidth StartIcon="@Icons.Material.Filled.CreateNewFolder">Create a Cabinet</MudButton></MudItem>
     <MudGrid Style="max-height:70vh; overflow:scroll;" Class="mt-6">
         @if (cabinets.Any())
