@@ -3,7 +3,7 @@
 <PageTitle>E-Registry || View Document</PageTitle>
 @if (Model!=null)
 {
-    <h3>View : @Model.Library.Cabinet.Code : @Model.Library.Code : @Model.Title</h3>
+    <h3>View : @Model.Library.Cabinet.Code : @Model.Library.Code : @Model.Title @(Source==1 ? "from archieve." : "")</h3>
     <MudGrid Class="mt-4">
         <MudItem xs="12">
             <MudCard Style="padding:20px" MinHeight="40vh">
@@ -12,41 +12,55 @@
                 </MudCardHeader>
                 <MudCardContent>
                     <MudSimpleTable Striped Bordered>
-                        <tbody>
-                            <MudTr>
-                                <MudTd>Title : </MudTd>
-                                <MudTd>@Model.Title</MudTd>
-                            </MudTr>
-                            <MudTr>
-                                <MudTd>Description : </MudTd>
-                                <MudTd>@Model.Description</MudTd>
-                            </MudTr>
-                            <MudTr>
-                                <MudTd>Created By : </MudTd>
-                                <MudTd>@Model.CreatedBy</MudTd>
-                            </MudTr>
-                            <MudTr>
-                                <MudTd>Created On : </MudTd>
-                                <MudTd>@Model.CreatedOn.ToString("dd/MM/yyyy, H:mm")</MudTd>
-                            </MudTr>
-                            @if (Model.LastModifiedOn is not null)
+                    <tbody>
+                        <MudTr>
+                            <MudTd>Title : </MudTd>
+                            <MudTd>@Model.Title</MudTd>
+                        </MudTr>
+                        <MudTr>
+                            <MudTd>Description : </MudTd>
+                            <MudTd>@Model.Description</MudTd>
+                        </MudTr>
+                        <MudTr>
+                            <MudTd>Library : </MudTd>
+                            <MudTd>@Model.Library.Name</MudTd>
+                        </MudTr>
+                        <MudTr>
+                            <MudTd>Cabinet : </MudTd>
+                            <MudTd>@Model.Library.Cabinet.Name</MudTd>
+                        </MudTr>
+                        <MudTr>
+                            <MudTd>File Store : </MudTd>
+                            <MudTd>@Model.Library.Cabinet.FileStore.Name</MudTd>
+                        </MudTr>
+                        <MudTr>
+                            <MudTd>Created : </MudTd>
+                            <MudTd>
+                                @Model.CreatedOn.ToString("dd/MM/yyyy, H:mm") by @Model.CreatedBy
+                            </MudTd>
+                        </MudTr>
+                        @if (Model.LastModifiedOn is not null)
                             {
                                 <MudTr>
-                                    <MudTd>Last Modified By : </MudTd>
-                                    <MudTd>@Model.LastModifiedBy</MudTd>
-                                </MudTr>
-                                <MudTr>
-                                    <MudTd>Last Modified On : </MudTd>
+                                    <MudTd>Last Modified : </MudTd>
                                     <MudTd>
-                                        @Model.LastModifiedOn.Value.ToString("dd/MM/yyyy, H:mm")
+                                        @Model.LastModifiedOn.Value.ToString("dd/MM/yyyy, H:mm") by @Model.LastModifiedBy
                                     </MudTd>
                                 </MudTr>
-                            }                            
+
+                            }
                         </tbody>
                     </MudSimpleTable>
                 </MudCardContent>
                 <MudCardActions>
-                    <MudButton OnClick="Trash" StartIcon="@Icons.Material.Filled.Archive" Color="Color.Warning">Archive</MudButton>
+                    @if (Source == 0)
+                    {
+                        <MudButton OnClick="Trash" StartIcon="@Icons.Material.Filled.Archive" Color="Color.Warning">Archive</MudButton>
+                    }
+                    else
+                    {
+                        <MudButton OnClick="Restore" StartIcon="@Icons.Material.Filled.RestoreFromTrash" Color="Color.Success">Restore</MudButton>
+                    }
                 </MudCardActions>
             </MudCard>
         </MudItem>
@@ -96,7 +110,9 @@ else
     [Parameter]
     [SupplyParameterFromQuery(Name = "id")]
     public string Id { get; set; }
-
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "source")]
+    public int Source { get; set; }
     Document? Model = default;
     protected override void OnInitialized()
     {
@@ -106,7 +122,7 @@ else
 
         try
         {
-            if (string.IsNullOrEmpty(Id))
+            if (string.IsNullOrEmpty(Id) || Source > 1 || Source < 0)
             {
                 snackBar.Add("Invalid Request!", Severity.Error);
                 NavManager.NavigateTo("/dashboard", true);
@@ -131,8 +147,47 @@ else
     }
     async void ViewPageFile(PageFile file)
     {
-        var dialog = dialogService.Show<ViewPageFileModal>(file.FileName, new DialogParameters { ["Model"] = file }, new DialogOptions { FullWidth = true, CloseButton = true, Position = DialogPosition.TopCenter, MaxWidth=MaxWidth.Medium });
+        var dialog = dialogService.Show<ViewPageFileModal>(file.FileName, new DialogParameters { ["Model"] = file, ["Source"]=Source }, new DialogOptions { FullWidth = true, CloseButton = true, Position = DialogPosition.TopCenter, MaxWidth=MaxWidth.Medium });
         await dialog.Result;
+    }
+    async void Restore()
+    {
+        bool? confirm = await dialogService.ShowMessageBox(new MessageBoxOptions
+            {
+                CancelText = "Cancel",
+                Title = $"Restore : {Model.Title}",
+                Message = "Are you sure you want to restore this document?",
+                YesText = "Restore"
+            });
+        if (confirm.HasValue && confirm.Value)        {
+           
+            var archive = documentArchiveService.GetAll()
+            .FirstOrDefault(x => x.DocumentId==Model.Id);
+            if (archive is not null)
+            {
+                Model.Status = Shared.Constants.Status.CREATE;
+                archive.Status = 1;
+                Model.Pages.ForEach(p =>
+                {
+                    fileSystemService.MoveFileFromArchive(p.Path);
+                });
+                if (documentService.Save(Model)&&documentArchiveService.Save(archive))
+                {
+                    snackBar.Add("File restored successfully.", Severity.Success);
+                    await JavaScriptRuntime.InvokeVoidAsync("window.location.replace", "/documents/files");
+                }
+                else
+                {
+                    snackBar.Add("Opps!! something went wrong.", Severity.Error);
+                }
+            }
+            else
+            {
+                snackBar.Add("Opps!! something went wrong.", Severity.Error);
+            }
+        
+        }
+
     }
     async Task ShareFile(PageFile file)
     {
@@ -140,7 +195,7 @@ else
         var mimeType = "application/pdf";
         var fileData = new Dictionary<string, object>
         {
-            { "bytes", fileSystemService.ReadFileFromFileStoreAsBytes(file.Path,FileSource.main) },
+            { "bytes", fileSystemService.ReadFileFromFileStoreAsBytes(file.Path,(FileSource)Source) },
             { "mime", mimeType },
             { "name", file.FileName}
         };
@@ -155,6 +210,7 @@ else
         }
 
     }
+
     async void Trash()
     {
         bool? confirm = await dialogService.ShowMessageBox(new MessageBoxOptions
@@ -168,12 +224,12 @@ else
         {
             var archive = documentArchiveService.GetAll()
                                                 .FirstOrDefault(x => x.DocumentId == Model.Id);
-            if(archive is null)
+            if (archive is null)
             {
                 archive = new DocumentArchive()
-                {
+                    {
                         DocumentId = Model.Id
-                };
+                    };
                 Model.Status = Shared.Constants.Status.ARCHIVE;
                 Model.Pages.ForEach(s =>
                 {
@@ -182,7 +238,7 @@ else
                 if (documentService.Save(Model) && documentArchiveService.Save(archive))
                 {
                     snackBar.Add("File moved to archive.", Severity.Success);
-                    NavManager.NavigateTo("documents/files",true);
+                    NavManager.NavigateTo("documents/files", true);
                 }
                 else
                 {

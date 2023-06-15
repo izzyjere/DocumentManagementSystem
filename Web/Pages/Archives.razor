@@ -1,9 +1,107 @@
 ﻿@page "/archive"
+@using Microsoft.EntityFrameworkCore;
 <h3>Archives</h3>
 <PageContent PageTitle="File Archive">
+    <MudItem xs="12"><MudTextField T="string" Variant="Variant.Outlined" FullWidth Adornment=Adornment.End AdornmentIcon="@Icons.Material.Filled.Search" Label="Search Archive"></MudTextField></MudItem>
+    <MudGrid Style="max-height:70vh; overflow:scroll;" Class="mt-6">
+        @if (documents.Any())
+        {
+            foreach (var document in documents)
+            {
+                <MudItem xs="12" sm="6" md="4" Class="mb-4">
+                    <MudPaper Style="border-radius:10px;">
+                        <MudGrid>
+                            <MudItem xs="5">
+                                <MudIcon Color="Color.Tertiary" Icon="@Icons.Custom.FileFormats.FileDocument" Style="height:150px; width:200px;"></MudIcon>
+                            </MudItem>
+                            <MudItem xs="7">
+                                <MudText GutterBottom Class="mt-4 ml-3" Typo="Typo.h6">
+                                    <b>@document.Title</b><br />
+                                    <MudChip @onclick='()=>NavManager.NavigateTo($"documents/files?library={document.LibraryId}",true)' Label Icon="@Icons.Material.Outlined.Layers" Size="Size.Small">@document.Library.Code</MudChip>
+                                    <MudChip Label Icon="@Icons.Material.Outlined.Storage" Size="Size.Small">@document.Library.Cabinet.Code</MudChip>
+                                </MudText>
+                                <MudText @onclick='()=>NavManager.NavigateTo($"documents/files/view={document.Id}",true)' Style="cursor:pointer" Class="ml-3 mt-2" Typo="Typo.subtitle1">@(document.Pages?.Count??0) Pages</MudText>
+                                <MudText Color="Color.Info" GutterBottom Class="ml-3" Typo="Typo.caption">Created On: @document.CreatedOn.ToString("dd MMM yy H:mm")</MudText>
+                                <div Class="ml-3 mt-2">
+                                    <MudItem xs="12">
+                                        <MudButton OnClick='()=>NavManager.NavigateTo($"documents/files/view?id={document.Id}&source=1",true)' Style="text-transform:none;" Color="Color.Success" Variant="Variant.Outlined" StartIcon="@Icons.Material.Outlined.DocumentScanner" Size="Size.Small">View</MudButton>
+                                        <MudButton Class="ml-2" OnClick="()=>Restore(document.Id)" Style="text-transform:none;" Color="Color.Primary" Variant="Variant.Outlined" StartIcon="@Icons.Material.Outlined.RestoreFromTrash" Size="Size.Small">Restore</MudButton>
+                                    </MudItem>
+                                </div>
+                            </MudItem>
+                        </MudGrid>
+                    </MudPaper>
+                </MudItem>
+            }
+        }
+        else
+        {
 
+            <MudItem xs="12" Class="m-4">
+                <MudAlert Severity="Severity.Warning">No Documents Found.</MudAlert>
+            </MudItem>
+        }
+    </MudGrid>
 </PageContent>
 
 @code {
+    IEnumerable<Document> documents = Enumerable.Empty<Document>();
+    protected override void OnInitialized()
+    {
+        LoadData();
+    }
+    void LoadData()
+    {
+        documents = documentArchiveService
+                 .GetAll().Include(x => x.Document)
+                 .ThenInclude(d => d.Pages)
+                 .Include(x => x.Document)
+                 .ThenInclude(d => d.Library)
+                 .ThenInclude(l => l.Cabinet)
+                 .ThenInclude(c => c.FileStore)
+                 .Where(x => x.Status==0)
+                 .Select(x => x.Document)
+                 .ToList();
+        StateHasChanged();
+    }
+    async void Restore(Guid recordId)
+    {     var record = documentService.GetAll().Include(x => x.Pages)
+            .First(r => r.Id == recordId);
+        bool? confirm = await dialogService.ShowMessageBox(new MessageBoxOptions
+            {
+                CancelText = "Cancel",
+                Title = $"Restore : {record.Title}",
+                Message = "Are you sure you want to restore this document?",
+                YesText = "Restore"
+            });
+        if (confirm.HasValue && confirm.Value)
+        {
 
+            var archive = documentArchiveService.GetAll()
+            .FirstOrDefault(x=>x.DocumentId==record.Id);
+            if(archive is not null)
+            {
+                record.Status = Shared.Constants.Status.CREATE;
+                archive.Status = 1;
+                record.Pages.ForEach(p =>
+                {
+                    fileSystemService.MoveFileFromArchive(p.Path);
+                });
+                if (documentService.Save(record)&&documentArchiveService.Save(archive))
+                {
+                    snackBar.Add("File restored successfully.", Severity.Success);
+                    await JavaScriptRuntime.InvokeVoidAsync("window.location.replace", "/documents/files");
+
+                }
+                else
+                {
+                    snackBar.Add("Opps!! something went wrong.", Severity.Error);
+                }
+            }
+            else
+            {
+               snackBar.Add("Opps!! something went wrong.", Severity.Error);                
+            }
+        }
+    }
 }

@@ -102,8 +102,8 @@ namespace RTSADocs.Services
         {
             try
             {
-                var currentPath = Path.Combine(FileSystemRootArchive, filePath);
-                var newPath = Path.Combine(FileSystemRootMain, filePath);
+                var currentPath = Path.Combine(FileSystemRootArchive + filePath);
+                var newPath = Path.Combine(FileSystemRootMain + filePath);
                 File.Move(currentPath, newPath);
                 return Result.Success();
             }

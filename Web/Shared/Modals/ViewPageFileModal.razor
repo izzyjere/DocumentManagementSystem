@@ -1,7 +1,7 @@
 ﻿<MudDialog>
     <DialogContent>
         <div style="height:100%;">
-            <embed allowfullscreen type="application/pdf" role="document" src="@($"{fileSystemService.ReadFileFromFileStoreAsBlob(Model.Path,FileSource.main)}#toolbar=1&navpanes=1&scrollbar=1&view=FitH&statusbar=0&messages=0&nameddest=false&filename={Model.FileName}")" width="920" height="2100">
+            <embed allowfullscreen type="application/pdf" role="document" src="@($"{fileSystemService.ReadFileFromFileStoreAsBlob(Model.Path,(FileSource)Source)}#toolbar=1&navpanes=1&scrollbar=1&view=FitH&statusbar=0&messages=0&nameddest=false&filename={Model.FileName}")" width="920" height="2100">
         </div>
     </DialogContent>
 </MudDialog>
@@ -9,4 +9,6 @@
 @code {
     [Parameter]
     public PageFile Model { get; set; }
+    [Parameter]
+    public int Source { get; set; }
 }

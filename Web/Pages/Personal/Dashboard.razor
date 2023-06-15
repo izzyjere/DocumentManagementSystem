@@ -8,8 +8,8 @@
             <MudIcon Icon="@Icons.Material.Filled.FilePresent" Color="Color.Primary" Class="mx-4" Style="width:54px; height:54px;"></MudIcon>
             <div>
                 <MudText Typo="Typo.subtitle1" Class="mud-text-secondary mb-n1">Files</MudText>
-                <MudText Typo="Typo.h5">@(dashboardService.Count<Document>())</MudText>
-                </div>
+                <MudText Typo="Typo.h5">@(documentService.GetAll().Count(x => x.Status!="ARCHIVE"))</MudText>
+             </div>
             </MudPaper>
         </MudItem>
         <MudItem xs="12" sm="6" md="3">
@@ -43,7 +43,7 @@
             <MudCard Class="m-4 pa-4" Style="border-radius:10px;height:65vh;overflow:hidden;min-width:100%">
                 <MudCardHeader>
                     <MudTextField Immediate Variant=Variant.Outlined T="string" Label="Search for Documents" FullWidth Class="m-4 mt-4 mud-elevation-25" Adornment=Adornment.End AdornmentIcon="@Icons.Material.Filled.Search" ValueChanged="OnSearch"></MudTextField>
-                </MudCardHeader>
+            </MudCardHeader>
             <MudCardContent>
                 <MudText Color="Color.Info" Typo="Typo.h6">@searchContext</MudText>
                 <MudGrid Style="max-height:70vh; overflow:scroll;" Class="mt-6">
@@ -106,13 +106,13 @@
     }
     void LoadData()
     {
-        recentDocuments = documentService.GetAll()                                           
+        recentDocuments = documentService.GetAll()
                                           .Include(d => d.Pages)
                                           .Include(d => d.Library)
                                           .ThenInclude(l => l.Cabinet)
                                           .ThenInclude(c => c.FileStore)
                                           .OrderByDescending(d => d.CreatedOn)
-                                          .Where(d=>d.Status!=Shared.Constants.Status.ARCHIVE)
+                                          .Where(d => d.Status!=Shared.Constants.Status.ARCHIVE)
                                           .Take(3).ToList();
         StateHasChanged();
     }
