@@ -3,7 +3,8 @@ async function sharePage(pageFile) {
         type : pageFile.mime
     });
     let shareData = {
-        title : "Share PDF",
+        title: "Share PDF",
+        text: 'File sharing from E-Registry !',
         files:[file]
     };
     if (!navigator.canShare(shareData)) {

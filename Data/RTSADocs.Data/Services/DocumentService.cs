@@ -26,6 +26,7 @@ namespace RTSADocs.Data.Services
                                              d.Pages.Any(p=>p.FileName.Contains(query))||
                                              d.Library.Name.Contains(query) ||
                                              d.Library.Code.Contains(query) ||
+                                             d.SubmittedBy.Contains(query) ||
                                              d.Library.Cabinet.Code.Contains(query) ||
                                              d.Library.Cabinet.Name.Contains(query));
         }

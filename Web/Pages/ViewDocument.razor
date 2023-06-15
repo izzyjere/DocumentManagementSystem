@@ -4,46 +4,87 @@
 @if (Model!=null)
 {
     <h3>View : @Model.Library.Cabinet.Code : @Model.Library.Code : @Model.Title</h3>
-    <MudCard Style="padding:20px" MinHeight="90vh">
-        <MudCardHeader>
-            <MudText Color="Color.Primary" Typo="Typo.subtitle2">Attached Files</MudText>
-        </MudCardHeader>
-        <MudCardContent>
-            <MudSimpleTable Bordered Striped FixedHeader>
-                <colgroup>
-                    <col width="40%"/>
-                    <col width="30%"/>
-                    <col width="30%"/>
-                </colgroup>
-            <MudTHeadRow>
-                <MudTh><MudText Typo="Typo.subtitle2">File Name</MudText></MudTh>
-                <MudTh><MudText Typo="Typo.subtitle2">Date Uploaded</MudText></MudTh>
-                <MudTh><MudText Typo="Typo.subtitle2">Actions</MudText></MudTh>
-            </MudTHeadRow>
-            <tbody>
-                @foreach (var file in Model.Pages)
-                    {
-                        <MudTr>
-                            <MudTd>
-                                <MudListItem IconColor="Color.Secondary" Icon="@Icons.Custom.FileFormats.FilePdf">
-                                    @file.FileName
-                                </MudListItem>
-                            </MudTd>
-                            <MudTd>@file.DateUploaded.ToString("dd MMM yy, H:mm")</MudTd>
-                            <MudTd>
-                                <MudButton Class="mr-3" StartIcon="@Icons.Custom.FileFormats.FileDocument" OnClick="()=>ViewPageFile(file)" Variant="Variant.Outlined" Color="Color.Info">
-                                    View
-                                </MudButton>
-                                <MudButton Class="mr-3" StartIcon="@Icons.Material.Filled.Share" OnClick="()=>ShareFile(file)" Variant="Variant.Outlined" Color="Color.Primary">
-                                    Share
-                                </MudButton>                                
-                            </MudTd>
-                        </MudTr>
-                    }
-                </tbody>
-            </MudSimpleTable>
-        </MudCardContent>
-    </MudCard>
+    <MudGrid Class="mt-4">
+        <MudItem xs="12">
+            <MudCard Style="padding:20px" MinHeight="40vh">
+                <MudCardHeader>
+                    <MudText Color="Color.Primary" Typo="Typo.subtitle2">Document Details</MudText>
+                </MudCardHeader>
+                <MudCardContent>
+                    <MudSimpleTable Striped Bordered>
+                        <tbody>
+                            <MudTr>
+                                <MudTd>Title : </MudTd>
+                                <MudTd>@Model.Title</MudTd>
+                            </MudTr>
+                            <MudTr>
+                                <MudTd>Description : </MudTd>
+                                <MudTd>@Model.Description</MudTd>
+                            </MudTr>
+                            <MudTr>
+                                <MudTd>Created By : </MudTd>
+                                <MudTd>@Model.CreatedBy</MudTd>
+                            </MudTr>
+                            <MudTr>
+                                <MudTd>Created On : </MudTd>
+                                <MudTd>@Model.CreatedOn.ToString("dd/MM/yyyy, H:mm")</MudTd>
+                            </MudTr>
+                            @if (Model.LastModifiedOn is not null)
+                            {
+                                <MudTr>
+                                    <MudTd>Last Modified By : </MudTd>
+                                    <MudTd>@Model.LastModifiedBy</MudTd>
+                                </MudTr>
+                                <MudTr>
+                                    <MudTd>Last Modified On : </MudTd>
+                                    <MudTd>
+                                        @Model.LastModifiedOn.Value.ToString("dd/MM/yyyy, H:mm")
+                                    </MudTd>
+                                </MudTr>
+                            }                            
+                        </tbody>
+                    </MudSimpleTable>
+                </MudCardContent>
+                <MudCardActions>
+                    <MudButton StartIcon="@Icons.Material.Filled.Archive" Color="Color.Error">Archive</MudButton>
+                </MudCardActions>
+            </MudCard>
+        </MudItem>
+        <MudItem xs="12">
+            <MudCard Style="padding:20px" MinHeight="40vh">
+                <MudCardHeader>
+                    <MudText Color="Color.Primary" Typo="Typo.subtitle2">Attached Files</MudText>
+                </MudCardHeader>
+                <MudCardContent>
+                    <MudTable Context="file" Items="Model.Pages" Bordered Striped FixedHeader>
+                    <HeaderContent>
+                        <MudTh><MudText Typo="Typo.subtitle2">File Name</MudText></MudTh>
+                        <MudTh><MudText Typo="Typo.subtitle2">Date Uploaded</MudText></MudTh>
+                        <MudTh><MudText Typo="Typo.subtitle2">Actions</MudText></MudTh>
+                    </HeaderContent>
+                    <RowTemplate>
+                        <MudTd DataLabel="FileName">
+                            <MudListItem IconColor="Color.Secondary" Icon="@Icons.Custom.FileFormats.FilePdf">
+                                @file.FileName
+                            </MudListItem>
+                        </MudTd>
+                        <MudTd DataLabel="Uploaded">@file.DateUploaded.ToString("dd MMM yy, H:mm")</MudTd>
+                        <MudTd DataLabel="Actions">
+                            <MudButton Class="mr-3" StartIcon="@Icons.Custom.FileFormats.FileDocument" OnClick="()=>ViewPageFile(file)" Variant="Variant.Outlined" Color="Color.Info">
+                                View
+                            </MudButton>
+                            <MudButton Class="mr-3" StartIcon="@Icons.Material.Filled.Share" OnClick="()=>ShareFile(file)" Variant="Variant.Outlined" Color="Color.Primary">
+                                Share
+                            </MudButton>
+                        </MudTd>
+                    </RowTemplate>
+                </MudTable>
+            </MudCardContent>
+        </MudCard>
+    </MudItem>
+</MudGrid>
+
+
 }
 else
 {
@@ -90,13 +131,13 @@ else
     }
     async void ViewPageFile(PageFile file)
     {
-        var dialog = dialogService.Show<ViewPageFileModal>(file.FileName, new DialogParameters { ["Model"] = file }, new DialogOptions {FullWidth = true, CloseButton = true, Position = DialogPosition.TopCenter, MaxWidth=MaxWidth.Medium });
+        var dialog = dialogService.Show<ViewPageFileModal>(file.FileName, new DialogParameters { ["Model"] = file }, new DialogOptions { FullWidth = true, CloseButton = true, Position = DialogPosition.TopCenter, MaxWidth=MaxWidth.Medium });
         await dialog.Result;
     }
     async Task ShareFile(PageFile file)
     {
 
-        var mimeType = "application/pdf";      
+        var mimeType = "application/pdf";
         var fileData = new Dictionary<string, object>
         {
             { "bytes", fileSystemService.ReadFileFromFileStoreAsBytes(file.Path,FileSource.main) },

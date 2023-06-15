@@ -43,7 +43,7 @@
             <MudCard Class="m-4 pa-4" Style="border-radius:10px;height:65vh;overflow:hidden;min-width:100%">
                 <MudCardHeader>
                     <MudTextField Immediate Variant=Variant.Outlined T="string" Label="Search for Documents" FullWidth Class="m-4 mt-4 mud-elevation-25" Adornment=Adornment.End AdornmentIcon="@Icons.Material.Filled.Search" ValueChanged="OnSearch"></MudTextField>
-            </MudCardHeader>
+                </MudCardHeader>
             <MudCardContent>
                 <MudText Color="Color.Info" Typo="Typo.h6">@searchContext</MudText>
                 <MudGrid Style="max-height:70vh; overflow:scroll;" Class="mt-6">
@@ -52,28 +52,32 @@
                         foreach (var document in recentDocuments)
                         {
                             <MudItem xs="12" sm="6" md="4" Class="mb-4">
-                                <MudPaper Style="border-radius:10px;">
-                                    <MudGrid>
-                                        <MudItem xs="5">
-                                            <MudIcon Color="Color.Tertiary" Icon="@Icons.Custom.FileFormats.FileDocument" Style="height:150px; width:200px;"></MudIcon>
-                                        </MudItem>
-                                        <MudItem xs="7">
-                                            <MudText GutterBottom Class="mt-4 ml-3" Typo="Typo.h6">
-                                                <b>@document.Title</b><br />
-                                                <MudChip @onclick='()=>NavManager.NavigateTo($"documents/files?library={document.LibraryId}",true)' Label Icon="@Icons.Material.Outlined.Layers" Size="Size.Small">@document.Library.Code</MudChip>
-                                                <MudChip Label Icon="@Icons.Material.Outlined.Storage" Size="Size.Small">@document.Library.Cabinet.Code</MudChip>
-                                            </MudText>
-                                            <MudText @onclick='()=>NavManager.NavigateTo($"documents/files/view={document.Id}",true)' Style="cursor:pointer" Class="ml-3 mt-2" Typo="Typo.subtitle1">@(document.Pages?.Count??0) Pages</MudText>
-                                            <MudText Color="Color.Info" GutterBottom Class="ml-3" Typo="Typo.caption">Created On: @document.CreatedOn.ToString("dd MMM yy H:mm")</MudText>
-                                            <div Class="ml-3 mt-2">
+                                <MudCard Style="border-radius:10px;">
+                                    <MudCardHeader>
+                                        <CardHeaderContent>
+                                            <MudGrid Spacing="0">
                                                 <MudItem xs="12">
-                                                    <MudButton OnClick='()=>NavManager.NavigateTo($"documents/files/view?id={document.Id}",true)' Style="text-transform:none;" Color="Color.Success" Variant="Variant.Outlined" StartIcon="@Icons.Material.Outlined.DocumentScanner" Size="Size.Small">View</MudButton>
-                                                    <MudButton Class="ml-2" OnClick="()=>Edit(document)" Style="text-transform:none;" Color="Color.Warning" Variant="Variant.Outlined" StartIcon="@Icons.Material.Outlined.Edit" Size="Size.Small">Edit</MudButton>
+                                                    <MudText Typo="Typo.h5">
+                                                        <b>@document.Title</b>
+                                                    </MudText>
                                                 </MudItem>
+                                                <MudItem xs="12">
+                                                    <MudChip Color="Color.Secondary" @onclick='()=>NavManager.NavigateTo($"documents/files?library={document.LibraryId}",true)' Variant="Variant.Text" Label Icon="@Icons.Material.Outlined.Storage" Size="Size.Small">@document.Library.Cabinet.FileStore.ShortName</MudChip>
+                                                    <MudChip Color="Color.Tertiary" @onclick='()=>NavManager.NavigateTo($"documents/files?library={document.LibraryId}",true)' Variant="Variant.Text" Label Icon="@Icons.Material.Outlined.Layers" Size="Size.Small">@document.Library.Code/@document.Code</MudChip>
+                                                </MudItem>
+                                                <MudItem xs="12">
+                                                    <MudText Align="Align.End" Color="Color.Info" Typo="Typo.caption">Created: @document.CreatedOn.ToString("dd MMM yy H:mm")</MudText>
+                                                </MudItem>
+                                            </MudGrid>
+                                        </CardHeaderContent>
+                                        <CardHeaderActions>
+                                            <div Class="ml-3">
+                                                <MudIconButton Title="View File" OnClick='()=>NavManager.NavigateTo($"documents/files/view?id={document.Id}",true)' Style="text-transform:none;" Color="Color.Success" Variant="Variant.Outlined" Icon="@Icons.Custom.FileFormats.FileDocument" Size="Size.Small"></MudIconButton>
+                                                <MudIconButton Title="Edit File" Class="ml-2" OnClick="()=>Edit(document)" Style="text-transform:none;" Color="Color.Warning" Variant="Variant.Outlined" Icon="@Icons.Material.Outlined.Edit" Size="Size.Small"></MudIconButton>
                                             </div>
-                                        </MudItem>
-                                    </MudGrid>
-                                </MudPaper>
+                                        </CardHeaderActions>
+                                    </MudCardHeader>
+                                </MudCard>
                             </MudItem>
                         }
                     }
