@@ -46,7 +46,7 @@
                     </MudSimpleTable>
                 </MudCardContent>
                 <MudCardActions>
-                    <MudButton StartIcon="@Icons.Material.Filled.Archive" Color="Color.Warning">Archive</MudButton>
+                    <MudButton OnClick="Trash" StartIcon="@Icons.Material.Filled.Archive" Color="Color.Warning">Archive</MudButton>
                 </MudCardActions>
             </MudCard>
         </MudItem>
@@ -154,5 +154,59 @@ else
             snackBar.Add("Sharing is not supported on this platform or has been cancelled.", Severity.Error);
         }
 
+    }
+    async void Trash()
+    {
+        bool? confirm = await dialogService.ShowMessageBox(new MessageBoxOptions
+            {
+                CancelText = "Cancel",
+                Title = $"Archive : {Model.Title}",
+                Message = "Are you sure you want to archive this document?",
+                YesText = "Yes archive"
+            });
+        if (confirm.HasValue && confirm.Value)
+        {
+            var archive = documentArchiveService.GetAll()
+                                                .FirstOrDefault(x => x.DocumentId == Model.Id);
+            if(archive is null)
+            {
+                archive = new DocumentArchive()
+                {
+                        DocumentId = Model.Id
+                };
+                Model.Status = Shared.Constants.Status.ARCHIVE;
+                Model.Pages.ForEach(s =>
+                {
+                    fileSystemService.MoveFileToArchive(s.Path);
+                });
+                if (documentService.Save(Model) && documentArchiveService.Save(archive))
+                {
+                    snackBar.Add("File moved to archive.", Severity.Success);
+                    NavManager.NavigateTo("documents/files",true);
+                }
+                else
+                {
+                    snackBar.Add("Failed to move file to archive.", Severity.Error);
+                }
+            }
+            else
+            {
+                archive.Status = 0;
+                Model.Status = Shared.Constants.Status.ARCHIVE;
+                Model.Pages.ForEach(s =>
+                {
+                    fileSystemService.MoveFileToArchive(s.Path);
+                });
+                if (documentService.Save(Model) && documentArchiveService.Save(archive))
+                {
+                    snackBar.Add("File moved to archive.", Severity.Success);
+                    NavManager.NavigateTo("documents/files", true);
+                }
+                else
+                {
+                    snackBar.Add("Failed to move file to archive.", Severity.Error);
+                }
+            }
+        }
     }
 }

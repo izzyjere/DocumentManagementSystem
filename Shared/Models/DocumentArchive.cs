@@ -6,7 +6,10 @@ using System.Threading.Tasks;
 
 namespace RTSADocs.Shared.Models
 {
-    internal class DocumentArchive   : AuditableEntity
+    public class DocumentArchive : AuditableEntity
     {
+        public Guid DocumentId { get; set; }
+        public Document Document { get; set; }
+        public int Status { get; set; }
     }
 }

@@ -81,8 +81,14 @@ namespace RTSADocs.Services
         {
             try
             {
-                var currentPath = Path.Combine(FileSystemRootMain, filePath);
-                var newPath = Path.Combine(FileSystemRootArchive, filePath);
+                var currentPath = Path.Combine(FileSystemRootMain + filePath);
+                var newPath = Path.Combine(FileSystemRootArchive+ filePath);
+                var dir = Path.GetDirectoryName(newPath);
+                if (!Directory.Exists(dir)&& !string.IsNullOrEmpty(dir))
+                {
+                    Directory.CreateDirectory(dir);
+                }
+                else { }
                 File.Move(currentPath, newPath);
                 return Result.Success();
             }

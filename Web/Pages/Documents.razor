@@ -124,26 +124,5 @@
             LoadData();
         }
     }
-    async void Trash(Document record)
-    {
-        bool? confirm = await dialogService.ShowMessageBox(new MessageBoxOptions
-            {
-                CancelText = "Cancel",
-                Title = $"Delete : {record.Description}",
-                Message = "Are you sure you want to delete this document? This action is dangeous!",
-                YesText = "Yes Delete"
-            });
-        if (confirm.HasValue && confirm.Value)
-        {
-            if (libraryService.Delete(record.Id))
-            {
-                snackBar.Add("Document Deleted. All files moved to archive.", Severity.Success);
-                LoadData();
-            }
-            else
-            {
-                snackBar.Add("Document Delete Failed. Ensure that were files moved to archive.", Severity.Error);
-            }
-        }
-    }
+    
 }
