@@ -12,7 +12,16 @@ namespace RTSADocs.Data.Services
 
         public bool Delete(Guid id)
         {
-            return _repository.Delete(id) != 0;
+            try
+            {
+                return _repository.Delete(id) != 0;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message+e.StackTrace);
+                return false;
+            }
+            
         }
 
         public IQueryable<TModel> GetAll()
