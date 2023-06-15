@@ -1,19 +1,49 @@
 ﻿@page "/documents/files/view"
 @using Microsoft.EntityFrameworkCore;
-
+<PageTitle>E-Registry || View Document</PageTitle>
 @if (Model!=null)
 {
     <h3>View : @Model.Library.Cabinet.Code : @Model.Library.Code : @Model.Title</h3>
-    <PageContent Style="padding:20px" PageTitle="View Document">
-        <MudTabs Border>
-        @foreach (var file in Model.Pages)
-        {
-            <MudTabPanel Icon="@Icons.Custom.FileFormats.FilePdf" Text="@file.FileName">
-                <DocumentViewer Style="min-width:100%;min-height:100%;" Src="@fileSystemService.ReadFileFromFileStoreAsBlob(file.Path, FileSource.main)" />
-            </MudTabPanel>
-        }
-        </MudTabs>
-    </PageContent>
+    <MudCard Style="padding:20px" MinHeight="90vh">
+        <MudCardHeader>
+            <MudText Color="Color.Primary" Typo="Typo.subtitle2">Attached Files</MudText>
+        </MudCardHeader>
+        <MudCardContent>
+            <MudSimpleTable Bordered Striped FixedHeader>
+                <colgroup>
+                    <col width="40%"/>
+                    <col width="30%"/>
+                    <col width="30%"/>
+                </colgroup>
+            <MudTHeadRow>
+                <MudTh><MudText Typo="Typo.subtitle2">File Name</MudText></MudTh>
+                <MudTh><MudText Typo="Typo.subtitle2">Date Uploaded</MudText></MudTh>
+                <MudTh><MudText Typo="Typo.subtitle2">Actions</MudText></MudTh>
+            </MudTHeadRow>
+            <tbody>
+                @foreach (var file in Model.Pages)
+                    {
+                        <MudTr>
+                            <MudTd>
+                                <MudListItem IconColor="Color.Secondary" Icon="@Icons.Custom.FileFormats.FilePdf">
+                                    @file.FileName
+                                </MudListItem>
+                            </MudTd>
+                            <MudTd>@file.DateUploaded.ToString("dd MMM yy, H:mm")</MudTd>
+                            <MudTd>
+                                <MudButton Class="mr-3" StartIcon="@Icons.Custom.FileFormats.FileDocument" OnClick="()=>ViewPageFile(file)" Variant="Variant.Outlined" Color="Color.Info">
+                                    View
+                                </MudButton>
+                                <MudButton Class="mr-3" StartIcon="@Icons.Material.Filled.Share" OnClick="()=>ShareFile(file)" Variant="Variant.Outlined" Color="Color.Primary">
+                                    Share
+                                </MudButton>                                
+                            </MudTd>
+                        </MudTr>
+                    }
+                </tbody>
+            </MudSimpleTable>
+        </MudCardContent>
+    </MudCard>
 }
 else
 {
@@ -56,7 +86,32 @@ else
         {
 
         }
-        
+
     }
-    
+    async void ViewPageFile(PageFile file)
+    {
+        var dialog = dialogService.Show<ViewPageFileModal>(file.FileName, new DialogParameters { ["Model"] = file }, new DialogOptions {FullWidth = true, CloseButton = true, Position = DialogPosition.TopCenter, MaxWidth=MaxWidth.Medium });
+        await dialog.Result;
+    }
+    async Task ShareFile(PageFile file)
+    {
+
+        var mimeType = "application/pdf";      
+        var fileData = new Dictionary<string, object>
+        {
+            { "bytes", fileSystemService.ReadFileFromFileStoreAsBytes(file.Path,FileSource.main) },
+            { "mime", mimeType },
+            { "name", file.FileName}
+        };
+
+        if (await JavaScriptRuntime.InvokeAsync<bool>("sharePage", fileData))
+        {
+            return;
+        }
+        else
+        {
+            snackBar.Add("Sharing is not supported on this platform or has been cancelled.", Severity.Error);
+        }
+
+    }
 }

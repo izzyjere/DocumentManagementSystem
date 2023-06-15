@@ -143,7 +143,24 @@ namespace RTSADocs.Services
             }
 
             throw new InvalidOperationException("File not found in  source");
-        } 
+        }    
+        public byte[] ReadFileFromFileStoreAsBytes(string path, FileSource source)
+        {
+            var finalPath = source switch
+            {
+                FileSource.main => Path.Combine(FileSystemRootMain+ path),
+                FileSource.archive => Path.Combine(FileSystemRootArchive+ path),
+                _ => throw new InvalidOperationException("Unknown filestore source")
+            };
+
+            if (File.Exists(finalPath))
+            {
+                var fileBytes = File.ReadAllBytes(finalPath);                
+                return fileBytes;
+            }
+
+            throw new InvalidOperationException("File not found in  source");
+        }      
         public Result DecryptFile(string filePath, FileSource source)
         {
             try

@@ -15,6 +15,7 @@ namespace RTSADocs.Shared.Services
         Result MoveFileToArchive(string filePath);
         Task<Result<MemoryStream>> ReadFileFromFileStore(string filePath, FileSource source);
         string ReadFileFromFileStoreAsBlob(string filePath, FileSource source);
+        byte[] ReadFileFromFileStoreAsBytes(string path, FileSource source);
         Task<Result<string>> WriteFileToStore(MemoryStream memoryStream, string fileStore);
     }
 }
