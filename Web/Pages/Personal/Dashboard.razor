@@ -106,12 +106,13 @@
     }
     void LoadData()
     {
-        recentDocuments = documentService.GetAll()
+        recentDocuments = documentService.GetAll()                                           
                                           .Include(d => d.Pages)
                                           .Include(d => d.Library)
                                           .ThenInclude(l => l.Cabinet)
                                           .ThenInclude(c => c.FileStore)
                                           .OrderByDescending(d => d.CreatedOn)
+                                          .Where(d=>d.Status!=Shared.Constants.Status.ARCHIVE)
                                           .Take(3).ToList();
         StateHasChanged();
     }

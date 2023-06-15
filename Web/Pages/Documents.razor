@@ -87,7 +87,7 @@
                                           .ThenInclude(l => l.Cabinet)
                                           .ThenInclude(c => c.FileStore)
                                           .OrderByDescending(d => d.CreatedOn)
-                                         .Where(x => x.LibraryId == Library.Id).ToList();
+                                         .Where(x => x.LibraryId == Library.Id && x.Status!=Shared.Constants.Status.ARCHIVE).ToList();
                 pageContext = $"{Library.Cabinet.FileStore.Name} : {Library.Cabinet.Name} : {Library.Name} : Files";
             }
 
@@ -100,7 +100,9 @@
                                           .Include(d => d.Library)
                                           .ThenInclude(l => l.Cabinet)
                                           .ThenInclude(c => c.FileStore)
-                                          .OrderByDescending(d => d.CreatedOn).ToList();
+                                          .OrderByDescending(d => d.CreatedOn)
+                                          .Where(d => d.Status!=Shared.Constants.Status.ARCHIVE)
+                                          .ToList();
         }
         StateHasChanged();
     }
