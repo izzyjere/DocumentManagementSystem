@@ -153,6 +153,7 @@
         else
         {
             fileStore = Library.Cabinet.FileStore;
+            Model.LibraryId = Library.Id;
         }
         StateHasChanged();
     }
@@ -193,6 +194,7 @@
     {
         try
         {
+
             if (fileStore is null || Model.LibraryId == Guid.Empty)
             {
                 snackBar.Add("No filestore choosen!", Severity.Error);

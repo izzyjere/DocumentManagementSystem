@@ -67,7 +67,12 @@ namespace RTSADocs.Services
                 var fullPath = Path.Combine(filePath, fileName);
                 FileStream fileStream = new(fullPath, FileMode.Create, FileAccess.Write);
 
-                await Task.Run(() => memoryStream.WriteTo(fileStream));
+                await Task.Run(() =>
+                {
+                    memoryStream.WriteTo(fileStream);
+                    fileStream.Close();
+                });
+
                 return Result<string>.Success(Path.Combine(path, fileName));
             }
             catch (Exception e)
@@ -141,15 +146,24 @@ namespace RTSADocs.Services
 
             if (File.Exists(finalPath))
             {
-                var fileBytes = File.ReadAllBytes(finalPath);
-                var base64String = Convert.ToBase64String(fileBytes);
-                var mimeType = "application/pdf";
-                var dataUrl = $"data:{mimeType};base64,{base64String}";
-                return dataUrl;
+                try
+                {
+                    var fileBytes = File.ReadAllBytes(finalPath);
+                    var base64String = Convert.ToBase64String(fileBytes);
+                    var mimeType = "application/pdf";
+                    var dataUrl = $"data:{mimeType};base64,{base64String}";
+                    return dataUrl;
+                }
+                catch (Exception)
+                {
+
+                    throw;
+                }
+
             }
 
             throw new InvalidOperationException("File not found in  source");
-        }    
+        }
         public byte[] ReadFileFromFileStoreAsBytes(string path, FileSource source)
         {
             var finalPath = source switch
@@ -161,12 +175,12 @@ namespace RTSADocs.Services
 
             if (File.Exists(finalPath))
             {
-                var fileBytes = File.ReadAllBytes(finalPath);                
+                var fileBytes = File.ReadAllBytes(finalPath);
                 return fileBytes;
             }
 
             throw new InvalidOperationException("File not found in  source");
-        }      
+        }
         public Result DecryptFile(string filePath, FileSource source)
         {
             try
