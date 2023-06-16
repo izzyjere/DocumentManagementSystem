@@ -1,0 +1,139 @@
+﻿@page "/dashboard"
+@using Microsoft.EntityFrameworkCore;
+<PageTitle>RTSA || Dashboard</PageTitle>
+<MudText Typo="Typo.h5" Color="Color.Primary" Class="mb-4">Dashboard</MudText>
+<MudGrid>
+    <MudItem xs="12" sm="6" md="3">
+        <MudPaper @onclick='()=>NavManager.NavigateTo("documents/files",true)' Class="d-flex flex-row pt-6 pb-4" Style="height:100px; cursor:pointer;">
+            <MudIcon Icon="@Icons.Material.Filled.FilePresent" Color="Color.Primary" Class="mx-4" Style="width:54px; height:54px;"></MudIcon>
+            <div>
+                <MudText Typo="Typo.subtitle1" Class="mud-text-secondary mb-n1">Files</MudText>
+                <MudText Typo="Typo.h5">@(documentService.GetAll().Count(x => x.Status!="ARCHIVE"))</MudText>
+             </div>
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="3">
+            <MudPaper @onclick='()=>NavManager.NavigateTo("documents/libraries",true)' Class="d-flex flex-row pt-6 pb-4" Style="height:100px; cursor:pointer;">
+                <MudIcon Icon="@Icons.Material.Filled.FolderOpen" Color="Color.Secondary" Class="mx-4" Style="width:54px; height:54px;"></MudIcon>
+                <div>
+                    <MudText Typo="Typo.subtitle1" Class="mud-text-secondary mb-n1">Libraries</MudText>
+                    <MudText Typo="Typo.h5">@(dashboardService.Count<Library>())</MudText>
+                </div>
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="3">
+            <MudPaper @onclick='()=>NavManager.NavigateTo("documents/cabinets",true)' Class="d-flex flex-row pt-6 pb-4" Style="height:100px; cursor:pointer;">
+                <MudIcon Icon="@Icons.Material.Filled.Layers" Color="Color.Success" Class="mx-4" Style="width:54px; height:54px;"></MudIcon>
+                <div>
+                    <MudText Typo="Typo.subtitle1" Class="mud-text-secondary mb-n1">Cabinets</MudText>
+                    <MudText Typo="Typo.h5">@(dashboardService.Count<Cabinet>())</MudText>
+                </div>
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="3">
+            <MudPaper @onclick='()=>NavManager.NavigateTo("documents/stores",true)' Class="d-flex flex-row pt-6 pb-4" Style="height:100px; cursor:pointer;">
+                <MudIcon Icon="@Icons.Material.Filled.Dataset" Color="Color.Warning" Class="mx-4" Style="width:54px; height:54px;"></MudIcon>
+                <div>
+                    <MudText Typo="Typo.subtitle1" Class="mud-text-secondary mb-n1">File Stores</MudText>
+                    <MudText Typo="Typo.h5">@(dashboardService.Count<FileStore>())</MudText>
+                </div>
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="12">
+            <MudCard Class="m-4 pa-4" Style="border-radius:10px;height:65vh;overflow:hidden;min-width:100%">
+                <MudCardHeader>
+                    <MudTextField Immediate Variant=Variant.Outlined T="string" Label="Search for Documents" FullWidth Class="m-4 mt-4 mud-elevation-25" Adornment=Adornment.End AdornmentIcon="@Icons.Material.Filled.Search" ValueChanged="OnSearch"></MudTextField>
+            </MudCardHeader>
+            <MudCardContent>
+                <MudText Color="Color.Info" Typo="Typo.h6">@searchContext</MudText>
+                <MudGrid Style="max-height:70vh; overflow:scroll;" Class="mt-6">
+                    @if (recentDocuments.Any())
+                    {
+                        foreach (var document in recentDocuments)
+                        {
+                            <MudItem xs="12" sm="6" md="4" Class="mb-4">
+                                <MudCard Style="border-radius:10px;">
+                                    <MudCardHeader>
+                                        <CardHeaderContent>
+                                            <MudGrid Spacing="0">
+                                                <MudItem xs="12">
+                                                    <MudText Typo="Typo.h5">
+                                                        <b>@document.Title</b>
+                                                    </MudText>
+                                                </MudItem>
+                                                <MudItem xs="12">
+                                                    <MudChip Color="Color.Secondary" @onclick='()=>NavManager.NavigateTo($"documents/files?library={document.LibraryId}",true)' Variant="Variant.Text" Label Icon="@Icons.Material.Outlined.Storage" Size="Size.Small">@document.Library.Cabinet.FileStore.ShortName</MudChip>
+                                                    <MudChip Color="Color.Tertiary" @onclick='()=>NavManager.NavigateTo($"documents/files?library={document.LibraryId}",true)' Variant="Variant.Text" Label Icon="@Icons.Material.Outlined.Layers" Size="Size.Small">@document.Library.Code/@document.Code</MudChip>
+                                                </MudItem>
+                                                <MudItem xs="12">
+                                                    <MudText Align="Align.End" Color="Color.Info" Typo="Typo.caption">Created: @document.CreatedOn.ToString("dd MMM yy H:mm")</MudText>
+                                                </MudItem>
+                                            </MudGrid>
+                                        </CardHeaderContent>
+                                        <CardHeaderActions>
+                                            <div Class="ml-3">
+                                                <MudIconButton Title="View File" OnClick='()=>NavManager.NavigateTo($"documents/files/view?id={document.Id}",true)' Style="text-transform:none;" Color="Color.Success" Variant="Variant.Outlined" Icon="@Icons.Custom.FileFormats.FileDocument" Size="Size.Small"></MudIconButton>
+                                                <MudIconButton Title="Edit File" Class="ml-2" OnClick="()=>Edit(document)" Style="text-transform:none;" Color="Color.Warning" Variant="Variant.Outlined" Icon="@Icons.Material.Outlined.Edit" Size="Size.Small"></MudIconButton>
+                                            </div>
+                                        </CardHeaderActions>
+                                    </MudCardHeader>
+                                </MudCard>
+                            </MudItem>
+                        }
+                    }
+                    else
+                    {
+
+                        <MudItem xs="12" Class="m-4">
+                            <MudAlert Severity="Severity.Warning">No Documents Found.</MudAlert>
+                        </MudItem>
+                    }
+                </MudGrid>
+            </MudCardContent>
+        </MudCard>
+    </MudItem>
+</MudGrid>
+
+@code {
+
+    IEnumerable<Document> recentDocuments = Enumerable.Empty<Document>();
+    string searchContext = "Recent Uploads";
+    protected override void OnInitialized()
+    {
+        LayoutService.Breadcrumbs.Clear();
+        LayoutService.Breadcrumbs.Add(new BreadcrumbItem(text: "Dashboard", href: "dashboard", icon: Icons.Material.Outlined.Dashboard));
+        LoadData();
+    }
+    void LoadData()
+    {
+        recentDocuments = documentService.GetAll()
+                                          .Include(d => d.Pages)
+                                          .Include(d => d.Library)
+                                          .ThenInclude(l => l.Cabinet)
+                                          .ThenInclude(c => c.FileStore)
+                                          .OrderByDescending(d => d.CreatedOn)
+                                          .Where(d => d.Status!=Shared.Constants.Status.ARCHIVE)
+                                          .Take(3).ToList();
+        StateHasChanged();
+    }
+    void OnSearch(string queryString)
+    {
+        if (string.IsNullOrWhiteSpace(queryString))
+        {
+            LoadData();
+            return;
+        }
+        searchContext = $"Search Results for: {queryString}";
+        recentDocuments = documentService.Search(queryString);
+        StateHasChanged();
+    }
+    async void Edit(Document record)
+    {
+        var dialog = dialogService.Show<CreateEditDocumentModal>($"Edit:  {record.Description}", new DialogParameters { ["Model"]=record, ["Library"]=record.Library, ["IsEditing"]=true }, new DialogOptions { FullWidth=true, MaxWidth=MaxWidth.Large, Position=DialogPosition.TopCenter });
+        var result = await dialog.Result;
+        if (!result.Canceled)
+        {
+            LoadData();
+        }
+    }
+}
