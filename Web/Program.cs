@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.EntityFrameworkCore;
-
+using Hangfire;
 using MudBlazor.Services;
 
 using RTSADocs;
@@ -11,11 +11,17 @@ using RTSADocs.Services;
 using RTSADocs.Shared.Services;
 
 using SimpleAuthentication;
+using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")??throw new ArgumentNullException("ConnectionString");
 // Add services to the container.
-builder.Services.AddRazorPages();                                                                                                                                                                                                                                                                                                                                                         
+builder.Services.AddRazorPages();
+builder.Services.AddHangfire(t =>
+{
+    t.UseSqlServerStorage(connectionString);   
+});
+builder.Services.AddHangfireServer();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddMudServices();
 builder.Services.AddSimpleAuthentication(userStoreOptions =>
@@ -24,7 +30,8 @@ builder.Services.AddSimpleAuthentication(userStoreOptions =>
 });
 builder.Services.AddTransient<ICurrentUserService,CurrentUserService>();
 builder.Services.AddDataAccess(connectionString);
-builder.Services.AddSingleton<IFileSystemService, LocalFileSystemService>();
+builder.Services.AddScoped<IFileSystemService, LocalFileSystemService>();
+
 builder.Services.AddScoped<AuthenticationStateProvider,CustomAuthenticationStateProvider>();
 var app = builder.Build();
 
@@ -47,4 +54,6 @@ app.MigrateDb();
 app.UseSimpleAuthentication();
 app.MapBlazorHub();
 app.MapFallbackToPage("/_Host");
+app.UseHangfireDashboard();
+app.InitFileStoreCleaner();
 app.Run();

@@ -1,5 +1,9 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Hangfire;
+
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+
+using RTSADocs.Shared.Services;
 
 using SimpleAuthentication;
 
@@ -18,6 +22,17 @@ namespace RTSADocs
             {
                 return false;
             }
+        }
+        internal static IApplicationBuilder InitFileStoreCleaner(this IApplicationBuilder app)
+        {
+            var scope = app.ApplicationServices.CreateScope();
+            var service = scope.ServiceProvider.GetService<IFileSystemService>();
+            if (service == null)
+            {
+                throw new Exception("Some services are missing: Name{IFileSystemService}");
+            }           
+            RecurringJob.AddOrUpdate("FileStore_Cleaner",() =>service.FileStoreCleanUp(), "*/5 * * * *");
+            return app;
         }
         internal static IApplicationBuilder MigrateDb(this IApplicationBuilder app)
         {

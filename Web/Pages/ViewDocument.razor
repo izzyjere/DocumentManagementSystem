@@ -90,7 +90,7 @@
                             <MudButton Class="mr-3" StartIcon="@Icons.Material.Filled.Share" OnClick="()=>ShareFile(file)"  Color="Color.Primary">
                                 Share
                             </MudButton>
-                            <MudButton Class="mr-3" StartIcon="@Icons.Material.Filled.Delete" OnClick="()=>ShareFile(file)" Color="Color.Error">
+                            <MudButton Class="mr-3" StartIcon="@Icons.Material.Filled.Delete" OnClick="()=>DeletePage(file)" Color="Color.Error">
                                 Trash
                             </MudButton>
                         </MudTd>
@@ -159,7 +159,15 @@ else
             });
         if (confirm.HasValue && confirm.Value)
         {
-            
+            if (pageFileService.Delete(file.Id))
+            {
+                snackBar.Add("File deleted successfully.", Severity.Success);
+                await JavaScriptRuntime.InvokeVoidAsync("window.location.replace", $"documents/files/view?id={Model.Id}");
+            }
+            else
+            {
+                snackBar.Add("Failed to delete file.", Severity.Error);
+            }
         }
     }
     async void ViewPageFile(PageFile file)

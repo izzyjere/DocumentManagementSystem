@@ -13,20 +13,26 @@ using System.Diagnostics.Contracts;
 using System.IO;
 
 using System.Security.Policy;
+using Hangfire;
 
 namespace RTSADocs.Services
 {
     internal class LocalFileSystemService : IFileSystemService
     {
+        readonly IPageFileService pageFileService;
+        readonly ILogger<LocalFileSystemService> logger;
         public string FileSystemRootMain => "C:\\ProgramData\\Codelabs\\DMS\\FileStores\\Main";
         public string FileSystemRootArchive => "C:\\ProgramData\\Codelabs\\DMS\\FileStores\\Archive";
 
-        public LocalFileSystemService()
+        public LocalFileSystemService(IPageFileService pageFileService, ILogger<LocalFileSystemService> logger)
         {
             Init();
+            this.pageFileService=pageFileService;
+            this.logger=logger;
         }
-        private void Init()
+        private void Init()  
         {
+           
             if (!Directory.Exists(FileSystemRootMain))
             {
                 Directory.CreateDirectory(FileSystemRootMain);
@@ -81,6 +87,70 @@ namespace RTSADocs.Services
                 return Result<string>.Failure("An error occured while trying to write file to filestore.");
             }
 
+        }
+        public static List<string> GetFilesRecursive(string directory)
+        {
+            List<string> fileList = new List<string>();
+            HashSet<string> addedFiles = new HashSet<string>();
+
+            try
+            {
+                // Process files in the current directory
+                string[] files = Directory.GetFiles(directory);
+                foreach (string file in files)
+                {
+                    if (!addedFiles.Contains(file))
+                    {
+                        fileList.Add(file);
+                        addedFiles.Add(file);
+                    }
+                }
+
+                // Recursively process subdirectories
+                string[] subdirectories = Directory.GetDirectories(directory);
+                foreach (string subdirectory in subdirectories)
+                {
+                    fileList.AddRange(GetFilesRecursive(subdirectory));
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error accessing directory: {ex.Message}");
+            }
+
+            return fileList;
+        }
+        public Task FileStoreCleanUp()
+        {
+            logger.LogInformation($"Filestore cleanup triggered at {DateTime.Now:dd/MM/yyy H:mm:ss}");
+            var mainFileStoreFiles =GetFilesRecursive(FileSystemRootMain);
+            var archieveFiles = GetFilesRecursive(FileSystemRootArchive);
+            logger.LogInformation("Found: {0} files in main store, Found: {1} files in archive store.",mainFileStoreFiles.Count,archieveFiles.Count);   
+            var mainCleaner = Task.Run(() =>
+            {
+                foreach (var filePath in mainFileStoreFiles)
+                {
+                    var fileName = Path.GetFileName(filePath);
+                    if (fileName!=null && pageFileService.IsCleanable(fileName))
+                    {
+                        File.Delete(filePath);
+                        logger.LogInformation("Cleaned Up: {0}", filePath);
+                    }
+                }
+            });
+            var archiveCleaner = Task.Run(() =>
+            {
+                foreach (var filePath in archieveFiles)
+                {
+                    var fileName = Path.GetFileName(filePath);
+                    if (fileName!=null && pageFileService.IsCleanable(fileName))
+                    {
+                        File.Delete(filePath);
+                        logger.LogInformation("Cleaned Up: {0}", filePath);
+                    }
+                }
+            });
+            return Task.WhenAll(mainCleaner, archiveCleaner);
         }
         public Result MoveFileToArchive(string filePath)
         {

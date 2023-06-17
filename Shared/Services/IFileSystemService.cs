@@ -10,6 +10,7 @@ namespace RTSADocs.Shared.Services
 
         Result DecryptFile(string filePath, FileSource source);
         Result EncryptFile(string filePath, FileSource source);
+        Task FileStoreCleanUp();
         Task<string> InitializeFileStore();
         Result MoveFileFromArchive(string filePath);
         Result MoveFileToArchive(string filePath);
