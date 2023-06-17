@@ -170,6 +170,7 @@ namespace RTSADocs
                     );
             }
             identityDb.Database.CommitTransaction();
+            identityDb.Database.CloseConnection();
             return app;
         }
     }
