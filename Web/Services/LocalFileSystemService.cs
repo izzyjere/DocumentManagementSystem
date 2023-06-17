@@ -19,9 +19,12 @@ namespace RTSADocs.Services
 {
     internal class LocalFileSystemService : IFileSystemService
     {
+        // Root directory for the main file store
         readonly IPageFileService pageFileService;
         readonly ILogger<LocalFileSystemService> logger;
         public string FileSystemRootMain => "C:\\ProgramData\\Codelabs\\DMS\\FileStores\\Main";
+
+        // Root directory for the archive file store
         public string FileSystemRootArchive => "C:\\ProgramData\\Codelabs\\DMS\\FileStores\\Archive";
 
         public LocalFileSystemService(IPageFileService pageFileService, ILogger<LocalFileSystemService> logger)
@@ -30,6 +33,9 @@ namespace RTSADocs.Services
             this.pageFileService=pageFileService;
             this.logger=logger;
         }
+
+        // Initialize the file system by creating the main and archive directories if they don't exist
+        private void Init()
         private void Init()  
         {
            
@@ -42,11 +48,15 @@ namespace RTSADocs.Services
                 Directory.CreateDirectory(FileSystemRootArchive);
             }
         }
+
+        // Initialize the file store by generating a random folder structure
         public Task<string> InitializeFileStore()
         {
             var folderName = GenerateRandomStructure();
             return Task.FromResult(folderName);
         }
+
+        // Generate a random folder structure with a specified maximum depth
         private string GenerateRandomStructure(int maxDepth = 6)
         {
             var depth = new Random().Next(2, maxDepth);
@@ -57,6 +67,8 @@ namespace RTSADocs.Services
             }
             return finalStructure;
         }
+
+        // Write a file to the file store
         public async Task<Result<string>> WriteFileToStore(MemoryStream memoryStream, string fileStore)
         {
             try
@@ -83,8 +95,8 @@ namespace RTSADocs.Services
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message+e.StackTrace);
-                return Result<string>.Failure("An error occured while trying to write file to filestore.");
+                Console.WriteLine(e.Message + e.StackTrace);
+                return Result<string>.Failure("An error occurred while trying to write a file to the file store.");
             }
 
         }
@@ -152,14 +164,16 @@ namespace RTSADocs.Services
             });
             return Task.WhenAll(mainCleaner, archiveCleaner);
         }
+
+        // Move a file from the main file store to the archive file store
         public Result MoveFileToArchive(string filePath)
         {
             try
             {
                 var currentPath = Path.Combine(FileSystemRootMain + filePath);
-                var newPath = Path.Combine(FileSystemRootArchive+ filePath);
+                var newPath = Path.Combine(FileSystemRootArchive + filePath);
                 var dir = Path.GetDirectoryName(newPath);
-                if (!Directory.Exists(dir)&& !string.IsNullOrEmpty(dir))
+                if (!Directory.Exists(dir) && !string.IsNullOrEmpty(dir))
                 {
                     Directory.CreateDirectory(dir);
                 }
@@ -170,9 +184,11 @@ namespace RTSADocs.Services
             catch (Exception e)
             {
                 Console.WriteLine(e.Message + e.StackTrace);
-                return Result.Failure("An error occured while trying to move file to archive.");
+                return Result.Failure("An error occurred while trying to move the file to the archive.");
             }
         }
+
+                // Move a file from the archive file store back to the main file store
         public Result MoveFileFromArchive(string filePath)
         {
             try
@@ -185,9 +201,11 @@ namespace RTSADocs.Services
             catch (Exception e)
             {
                 Console.WriteLine(e.Message + e.StackTrace);
-                return Result.Failure("An error occured while trying to move file from archive.");
+                return Result.Failure("An error occurred while trying to move the file from the archive.");
             }
         }
+
+        // Read a file from the file store as a MemoryStream
         public async Task<Result<MemoryStream>> ReadFileFromFileStore(string filePath, FileSource source)
         {
             var memoryStream = new MemoryStream();
@@ -195,7 +213,7 @@ namespace RTSADocs.Services
             {
                 FileSource.main => Path.Combine(FileSystemRootMain, filePath),
                 FileSource.archive => Path.Combine(FileSystemRootArchive, filePath),
-                _ => throw new InvalidOperationException("Unknown filestore source")
+                _ => throw new InvalidOperationException("Unknown file store source")
             };
             if (File.Exists(finalPath))
             {
@@ -205,13 +223,15 @@ namespace RTSADocs.Services
             }
             return Result<MemoryStream>.Failure("File not found.");
         }
+
+        // Read a file from the file store as a Base64-encoded string representing a data URL (blob)
         public string ReadFileFromFileStoreAsBlob(string path, FileSource source)
         {
             var finalPath = source switch
             {
-                FileSource.main => Path.Combine(FileSystemRootMain+ path),
-                FileSource.archive => Path.Combine(FileSystemRootArchive+ path),
-                _ => throw new InvalidOperationException("Unknown filestore source")
+                FileSource.main => Path.Combine(FileSystemRootMain + path),
+                FileSource.archive => Path.Combine(FileSystemRootArchive + path),
+                _ => throw new InvalidOperationException("Unknown file store source")
             };
 
             if (File.Exists(finalPath))
@@ -226,21 +246,21 @@ namespace RTSADocs.Services
                 }
                 catch (Exception)
                 {
-
                     throw;
                 }
-
             }
 
-            throw new InvalidOperationException("File not found in  source");
+            throw new InvalidOperationException("File not found in the source.");
         }
+
+        // Read a file from the file store as a byte array
         public byte[] ReadFileFromFileStoreAsBytes(string path, FileSource source)
         {
             var finalPath = source switch
             {
-                FileSource.main => Path.Combine(FileSystemRootMain+ path),
-                FileSource.archive => Path.Combine(FileSystemRootArchive+ path),
-                _ => throw new InvalidOperationException("Unknown filestore source")
+                FileSource.main => Path.Combine(FileSystemRootMain + path),
+                FileSource.archive => Path.Combine(FileSystemRootArchive + path),
+                _ => throw new InvalidOperationException("Unknown file store source")
             };
 
             if (File.Exists(finalPath))
@@ -249,32 +269,36 @@ namespace RTSADocs.Services
                 return fileBytes;
             }
 
-            throw new InvalidOperationException("File not found in  source");
+            throw new InvalidOperationException("File not found in the source.");
         }
+
+        // Decrypt a file from the file store
         public Result DecryptFile(string filePath, FileSource source)
         {
             try
             {
-
-                return Result.Success("File Decrypted.");
+                // Add code to decrypt the file here
+                return Result.Success("File decrypted.");
             }
             catch (Exception e)
             {
                 e.PrintStackTrace();
-                return Result.Failure("File Decryption failed.");
+                return Result.Failure("File decryption failed.");
             }
-
         }
+
+        // Encrypt a file from the file store
         public Result EncryptFile(string filePath, FileSource source)
         {
             try
             {
-                return Result.Success("File Decrypted.");
+                // Add code to encrypt the file here
+                return Result.Success("File encrypted.");
             }
             catch (Exception e)
             {
                 e.PrintStackTrace();
-                return Result.Failure("File Decryption failed.");
+                return Result.Failure("File encryption failed.");
             }
         }
     }

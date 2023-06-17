@@ -1,0 +1,129 @@
+﻿@page "/dashboard"
+@using Microsoft.EntityFrameworkCore;
+
+<PageTitle>RTSA || Dashboard</PageTitle>
+<!-- Page title for the dashboard -->
+
+<MudText Typo="Typo.h5" Color="Color.Primary" Class="mb-4">Dashboard</MudText>
+<!-- Heading for the dashboard -->
+
+<MudGrid>
+    <!-- Grid layout for the dashboard items -->
+
+    <MudItem xs="12" sm="6" md="3">
+        <!-- Dashboard item for "Files" -->
+        <MudPaper @onclick='()=>NavManager.NavigateTo("documents/files",true)' Class="d-flex flex-row pt-6 pb-4" Style="height:100px; cursor:pointer;">
+            <!-- Paper container with clickable behavior -->
+            <MudIcon Icon="@Icons.Material.Filled.FilePresent" Color="Color.Primary" Class="mx-4" Style="width:54px; height:54px;"></MudIcon>
+            <!-- Icon representing files -->
+            <div>
+                <MudText Typo="Typo.subtitle1" Class="mud-text-secondary mb-n1">Files</MudText>
+                <!-- Subtitle for "Files" -->
+                <MudText Typo="Typo.h5">@(documentService.GetAll().Count(x => x.Status!="ARCHIVE"))</MudText>
+                <!-- Display the count of files -->
+             </div>
+        </MudPaper>
+    </MudItem>
+
+    <!-- Similar MudItem components for "Libraries", "Cabinets", and "File Stores" -->
+
+    <MudItem xs="12">
+        <!-- Dashboard item for search -->
+        <MudCard Class="m-4 pa-4" Style="border-radius:10px;height:65vh;overflow:hidden;min-width:100%">
+            <!-- Card container -->
+            <MudCardHeader>
+                <!-- Card header section -->
+                <MudTextField Immediate Variant=Variant.Outlined T="string" Label="Search for Documents" FullWidth Class="m-4 mt-4 mud-elevation-25" Adornment=Adornment.End AdornmentIcon="@Icons.Material.Filled.Search" ValueChanged="OnSearch"></MudTextField>
+                <!-- Text field for document search -->
+            </MudCardHeader>
+            <MudCardContent>
+                <!-- Card content section -->
+                <MudText Color="Color.Info" Typo="Typo.h6">@searchContext</MudText>
+                <!-- Display the search context -->
+                <MudGrid Style="max-height:70vh; overflow:scroll;" Class="mt-6">
+                    <!-- Grid layout for displaying recent documents -->
+                    @if (recentDocuments.Any())
+                    {
+                        <!-- Check if there are any recent documents -->
+                        @foreach (var document in recentDocuments)
+                        {
+                            <!-- Iterate over the recent documents -->
+                            <MudItem xs="12" sm="6" md="4" Class="mb-4">
+                                <!-- Document item -->
+                                <MudCard Style="border-radius:10px;">
+                                    <!-- Card container -->
+                                    <MudCardHeader>
+                                        <!-- Card header section -->
+                                        <!-- Display document details and actions -->
+                                    </MudCardHeader>
+                                </MudCard>
+                            </MudItem>
+                        }
+                    }
+                    else
+                    {
+                        <!-- Display a message if no documents are found -->
+                    }
+                </MudGrid>
+            </MudCardContent>
+        </MudCard>
+    </MudItem>
+</MudGrid>
+
+@code {
+    // Code-behind logic
+
+    IEnumerable<Document> recentDocuments = Enumerable.Empty<Document>();
+    string searchContext = "Recent Uploads";
+    // Variables for storing recent documents and search context
+
+    protected override void OnInitialized()
+    {
+        LayoutService.Breadcrumbs.Clear();
+        LayoutService.Breadcrumbs.Add(new BreadcrumbItem(text: "Dashboard", href: "dashboard", icon: Icons.Material.Outlined.Dashboard));
+        // Configure the breadcrumbs for the dashboard page
+        LoadData();
+        // Load initial data for the dashboard
+    }
+
+    void LoadData()
+    {
+        recentDocuments = documentService.GetAll()
+                                          .Include(d => d.Pages)
+                                          .Include(d => d.Library)
+                                          .ThenInclude(l => l.Cabinet)
+                                          .ThenInclude(c => c.FileStore)
+                                          .OrderByDescending(d => d.CreatedOn)
+                                          .Where(d => d.Status!=Shared.Constants.Status.ARCHIVE)
+                                          .Take(3).ToList();
+        // Load the recent documents from the database
+        StateHasChanged();
+        // Update the component state
+    }
+
+    void OnSearch(string queryString)
+    {
+        if (string.IsNullOrWhiteSpace(queryString))
+        {
+            LoadData();
+            return;
+        }
+        searchContext = $"Search Results for: {queryString}";
+        recentDocuments = documentService.Search(queryString);
+        // Perform a search for documents based on the query string
+        StateHasChanged();
+        // Update the component state
+    }
+
+    async void Edit(Document record)
+    {
+        var dialog = dialogService.Show<CreateEditDocumentModal>($"Edit:  {record.Description}", new DialogParameters { ["Model"]=record, ["Library"]=record.Library, ["IsEditing"]=true }, new DialogOptions { FullWidth=true, MaxWidth=MaxWidth.Large, Position=DialogPosition.TopCenter });
+        // Show a dialog for editing a document
+        var result = await dialog.Result;
+        if (!result.Canceled)
+        {
+            LoadData();
+        }
+        // If the edit operation is successful, reload the data
+    }
+}
