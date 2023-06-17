@@ -126,12 +126,12 @@ namespace RTSADocs.Services
             var mainFileStoreFiles =GetFilesRecursive(FileSystemRootMain);
             var archieveFiles = GetFilesRecursive(FileSystemRootArchive);
             logger.LogInformation("Found: {0} files in main store, Found: {1} files in archive store.",mainFileStoreFiles.Count,archieveFiles.Count);   
-           var mainCleaner = Task.Run(() =>
+           var mainCleaner = Task.Run(async () =>
             {
                 foreach (var filePath in mainFileStoreFiles)
                 {
                     var fileName = Path.GetFileName(filePath);
-                    if (fileName!=null && pageFileService.IsCleanable(fileName))
+                    if (fileName!=null && await pageFileService.IsCleanable(fileName))
                     {
                         File.Delete(filePath);
                         logger.LogInformation("Cleaned Up: {0}", filePath);

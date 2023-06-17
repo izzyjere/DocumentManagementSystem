@@ -16,9 +16,9 @@ namespace RTSADocs.Data.Services
         public PageFileService(IRepository<PageFile> repository) : base(repository)
         {
         }
-        public Task<bool> IsCleanable(string fileName)
+        public async Task<bool> IsCleanable(string fileName)
         {
-            return GetAll().AnyAsync(f => f.Path.Contains(fileName));
+            return !(await GetAll().AnyAsync(f => Path.GetFileName(f.Path)==fileName));
         }
     }
 }
