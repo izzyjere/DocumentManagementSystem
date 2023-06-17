@@ -22,15 +22,17 @@ namespace RTSADocs
         internal static IApplicationBuilder MigrateDb(this IApplicationBuilder app)
         {
             var scope = app.ApplicationServices.CreateScope();
-            var db = scope.ServiceProvider.GetService<IdentityDatabaseContext>();
-            db.Database.EnsureCreated();
-            db.Database.ExecuteSqlRaw(@"IF NOT EXISTS (SELECT * FROM sys.schemas WHERE name = N'Identity') EXEC ('CREATE SCHEMA [Identity] AUTHORIZATION [dbo]');");
-            db.Database.OpenConnection();
-            db.Database.BeginTransaction();
-            if (!db.TableExist<User>())
+            var domainDb = scope.ServiceProvider.GetService<Data.DataAccess.DatabaseContext>();
+            var identityDb = scope.ServiceProvider.GetService<IdentityDatabaseContext>();
+            domainDb.Database.Migrate();
+            identityDb.Database.EnsureCreated();
+            identityDb.Database.ExecuteSqlRaw(@"IF NOT EXISTS (SELECT * FROM sys.schemas WHERE name = N'Identity') EXEC ('CREATE SCHEMA [Identity] AUTHORIZATION [dbo]');");
+            identityDb.Database.OpenConnection();
+            identityDb.Database.BeginTransaction();
+            if (!identityDb.TableExist<User>())
             {
 
-                db.Database.ExecuteSqlRaw(@"
+                identityDb.Database.ExecuteSqlRaw(@"
                                             CREATE TABLE [Identity].[Users](
 	                                            [Id] [nvarchar](450) NOT NULL,
 	                                            [IsActive] [bit] NOT NULL,
@@ -55,7 +57,7 @@ namespace RTSADocs
 	                                            [Id] ASC
                                             )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
                                             ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]");
-                db.Database.ExecuteSqlRaw(@"CREATE TABLE [Identity].[UserProfiles](
+                identityDb.Database.ExecuteSqlRaw(@"CREATE TABLE [Identity].[UserProfiles](
 	                                            [UserId] [nvarchar](450) NOT NULL,
 	                                            [FirstName] [nvarchar](max) NOT NULL,
 	                                            [LastName] [nvarchar](max) NOT NULL,
@@ -74,9 +76,9 @@ namespace RTSADocs
 
                                             ALTER TABLE [Identity].[UserProfiles] CHECK CONSTRAINT [FK_UserProfiles_Users_UserId]");
             }
-            if (!db.TableExist<Role>())
+            if (!identityDb.TableExist<Role>())
             {
-                db.Database.ExecuteSqlRaw(
+                identityDb.Database.ExecuteSqlRaw(
                      @"CREATE TABLE [Identity].[Roles](
 	                            [Id] [nvarchar](450) NOT NULL,
 	                            [Description] [nvarchar](max) NOT NULL,
@@ -90,9 +92,9 @@ namespace RTSADocs
                         ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]"
                     );
             }
-            if (!db.TableExist<IdentityUserRole<string>>())
+            if (!identityDb.TableExist<IdentityUserRole<string>>())
             {
-                db.Database.ExecuteSqlRaw(
+                identityDb.Database.ExecuteSqlRaw(
                     @"CREATE TABLE [Identity].[UserRoles](
 	                             [UserId] [nvarchar](450) NOT NULL,
 	                             [RoleId] [nvarchar](450) NOT NULL,
@@ -104,9 +106,9 @@ namespace RTSADocs
                          ) ON [PRIMARY]"
                     );
             }
-            if (!db.TableExist<IdentityUserLogin<string>>())
+            if (!identityDb.TableExist<IdentityUserLogin<string>>())
             {
-                db.Database.ExecuteSqlRaw(
+                identityDb.Database.ExecuteSqlRaw(
                     @"CREATE TABLE [Identity].[UserLogins](
 	                         [LoginProvider] [nvarchar](450) NOT NULL,
 	                         [UserId] [nvarchar](450) NOT NULL,
@@ -120,9 +122,9 @@ namespace RTSADocs
                          ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]"
                     );
             }
-            if (!db.TableExist<IdentityUserClaim<string>>())
+            if (!identityDb.TableExist<IdentityUserClaim<string>>())
             {
-                db.Database.ExecuteSqlRaw(
+                identityDb.Database.ExecuteSqlRaw(
                     @"CREATE TABLE [dbo].[UserClaims](
 	                          [Id] [int] IDENTITY(1,1) NOT NULL,
 	                          [UserId] [nvarchar](max) NULL,
@@ -136,9 +138,9 @@ namespace RTSADocs
                     );
             }
 
-            if (!db.TableExist<IdentityRoleClaim<string>>())
+            if (!identityDb.TableExist<IdentityRoleClaim<string>>())
             {
-                db.Database.ExecuteSqlRaw(
+                identityDb.Database.ExecuteSqlRaw(
                     @" CREATE TABLE [dbo].[RoleClaims](
 	                           [Id] [int] IDENTITY(1,1) NOT NULL,
 	                           [RoleId] [nvarchar](max) NULL,
@@ -151,9 +153,9 @@ namespace RTSADocs
                                ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]"
                     );
             }
-            if (!db.TableExist<IdentityUserToken<string>>())
+            if (!identityDb.TableExist<IdentityUserToken<string>>())
             {
-                db.Database.ExecuteSqlRaw(
+                identityDb.Database.ExecuteSqlRaw(
                     @"CREATE TABLE [Identity].[UserTokens](
 	                         [UserId] [nvarchar](450) NOT NULL,
 	                         [LoginProvider] [nvarchar](450) NOT NULL,
@@ -167,7 +169,7 @@ namespace RTSADocs
                              ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]"
                     );
             }
-            db.Database.CommitTransaction();
+            identityDb.Database.CommitTransaction();
             return app;
         }
     }
