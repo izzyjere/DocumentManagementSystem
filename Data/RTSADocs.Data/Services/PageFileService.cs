@@ -18,7 +18,7 @@ namespace RTSADocs.Data.Services
         }
         public async Task<bool> IsCleanable(string fileName)
         {
-            return !(await GetAll().AnyAsync(f => Path.GetFileName(f.Path)==fileName));
+            return !(await  GetAll().AnyAsync(f => Path.GetFileName(f.Path)==fileName));
         }
     }
 }
