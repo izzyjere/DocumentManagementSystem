@@ -83,12 +83,15 @@
                             </MudListItem>
                         </MudTd>
                         <MudTd DataLabel="Uploaded">@file.DateUploaded.ToString("dd MMM yy, H:mm")</MudTd>
-                        <MudTd DataLabel="Actions">
-                            <MudButton Class="mr-3" StartIcon="@Icons.Custom.FileFormats.FileDocument" OnClick="()=>ViewPageFile(file)" Variant="Variant.Outlined" Color="Color.Info">
+                        <MudTd Style="display:flex; justify-content:center;align-items:center" DataLabel="Actions">
+                            <MudButton Class="mr-3" StartIcon="@Icons.Custom.FileFormats.FileDocument" OnClick="()=>ViewPageFile(file)" Color="Color.Info">
                                 View
                             </MudButton>
-                            <MudButton Class="mr-3" StartIcon="@Icons.Material.Filled.Share" OnClick="()=>ShareFile(file)" Variant="Variant.Outlined" Color="Color.Primary">
+                            <MudButton Class="mr-3" StartIcon="@Icons.Material.Filled.Share" OnClick="()=>ShareFile(file)"  Color="Color.Primary">
                                 Share
+                            </MudButton>
+                            <MudButton Class="mr-3" StartIcon="@Icons.Material.Filled.Delete" OnClick="()=>ShareFile(file)" Color="Color.Error">
+                                Trash
                             </MudButton>
                         </MudTd>
                     </RowTemplate>
@@ -144,6 +147,20 @@ else
 
         }
 
+    }
+    async void DeletePage(PageFile file)
+    {
+        bool? confirm = await dialogService.ShowMessageBox(new MessageBoxOptions
+            {
+                CancelText = "Cancel",
+                Title = $"Delete : {file.FileName}",
+                Message = "Are you sure you want to delete this file?",
+                YesText = "Delete"
+            });
+        if (confirm.HasValue && confirm.Value)
+        {
+            
+        }
     }
     async void ViewPageFile(PageFile file)
     {

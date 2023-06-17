@@ -8,8 +8,8 @@
         {
             foreach (var document in documents)
             {
-                <MudItem xs="12" sm="6" md="4" Class="mb-4">
-                    <MudPaper Style="border-radius:10px;">
+                <MudItem xs="12" md="4" Class="mb-4">
+                    <MudPaper Style="border-radius:10px;min-width:100%">
                         <MudGrid>
                             <MudItem xs="5">
                                 <MudIcon Color="Color.Tertiary" Icon="@Icons.Custom.FileFormats.FileDocument" Style="height:150px; width:200px;"></MudIcon>
@@ -17,8 +17,7 @@
                             <MudItem xs="7">
                                 <MudText GutterBottom Class="mt-4 ml-3" Typo="Typo.h6">
                                     <b>@document.Title</b><br />
-                                    <MudChip @onclick='()=>NavManager.NavigateTo($"documents/files?library={document.LibraryId}",true)' Label Icon="@Icons.Material.Outlined.Layers" Size="Size.Small">@document.Library.Code</MudChip>
-                                    <MudChip Label Icon="@Icons.Material.Outlined.Storage" Size="Size.Small">@document.Library.Cabinet.Code</MudChip>
+                                    <MudChip @onclick='()=>NavManager.NavigateTo($"documents/files?library={document.LibraryId}",true)' Icon="@Icons.Material.Outlined.FolderOpen" Size="Size.Small">@document.Library.Name</MudChip>
                                 </MudText>
                                 <MudText @onclick='()=>NavManager.NavigateTo($"documents/files/view={document.Id}",true)' Style="cursor:pointer" Class="ml-3 mt-2" Typo="Typo.subtitle1">@(document.Pages?.Count??0) Pages</MudText>
                                 <MudText Color="Color.Info" GutterBottom Class="ml-3" Typo="Typo.caption">Created On: @document.CreatedOn.ToString("dd MMM yy H:mm")</MudText>

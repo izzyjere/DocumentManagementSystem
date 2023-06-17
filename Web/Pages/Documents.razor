@@ -14,29 +14,45 @@
 </MudGrid>
 <PageContent PageTitle="Documents">
     <MudItem xs="12"><MudButton OnClick="Create" Variant="Variant.Outlined" FullWidth StartIcon="@Icons.Material.Filled.CreateNewFolder">Create a Document</MudButton></MudItem>
-    <MudGrid Style="max-height:70vh; overflow:scroll;" Class="mt-6">
+    <MudGrid Justify="Justify.SpaceBetween" Style="max-height:70vh; overflow:scroll;" Class="mt-6">
         @if (documents.Any())
         {
             foreach (var document in documents)
             {
-                <MudItem xs="12" sm="6" md="4" Class="mb-4">
-                    <MudPaper Style="border-radius:10px;">
+                <MudItem xs="12" md="6" Class="mb-4">
+                    <MudPaper Style="border-radius:10px; min-width:100%">
                         <MudGrid>
                             <MudItem xs="5">
                                 <MudIcon Color="Color.Tertiary" Icon="@Icons.Custom.FileFormats.FileDocument" Style="height:150px; width:200px;"></MudIcon>
                             </MudItem>
                             <MudItem xs="7">
-                                <MudText GutterBottom Class="mt-4 ml-3" Typo="Typo.h6">
-                                    <b>@document.Title</b><br />
-                                    <MudChip @onclick='()=>NavManager.NavigateTo($"documents/files?library={document.LibraryId}",true)' Label Icon="@Icons.Material.Outlined.Layers" Size="Size.Small">@document.Library.Code</MudChip>
-                                    <MudChip Label Icon="@Icons.Material.Outlined.Storage" Size="Size.Small">@document.Library.Cabinet.Code</MudChip>
-                                </MudText>
+                                <MudGrid Justify="Justify.FlexStart">
+                                    <MudItem xs="12">
+                                        <MudText Class="mt-4 ml-3" Typo="Typo.h6">
+                                            <b>@document.Title</b>
+                                        </MudText>
+                                        <MudLink OnClick='()=>NavManager.NavigateTo($"documents/files?library={document.LibraryId}",true)'>
+                                            <MudText Class="ml-3" Typo="Typo.caption">
+                                                @document.Library.Name
+                                            </MudText>
+                                        </MudLink>
+                                    </MudItem>
+                                    <MudItem xs="5">
+                                        <MudChip Icon="@Icons.Material.Outlined.FolderOpen" Size="Size.Small">@document.Library.Code</MudChip>
+                                    </MudItem>
+                                    <MudItem xs="5">
+                                        <MudChip Icon="@Icons.Material.Outlined.Storage" Size="Size.Small">@document.Library.Cabinet.Code</MudChip>
+                                    </MudItem>
+                                    <MudItem></MudItem>
+                                </MudGrid>
+
                                 <MudText @onclick='()=>NavManager.NavigateTo($"documents/files/view={document.Id}",true)' Style="cursor:pointer" Class="ml-3 mt-2" Typo="Typo.subtitle1">@(document.Pages?.Count??0) Pages</MudText>
                                 <MudText Color="Color.Info" GutterBottom Class="ml-3" Typo="Typo.caption">Created On: @document.CreatedOn.ToString("dd MMM yy H:mm")</MudText>
                                 <div Class="ml-3 mt-2">
                                     <MudItem xs="12">
                                         <MudButton OnClick='()=>NavManager.NavigateTo($"documents/files/view?id={document.Id}",true)' Style="text-transform:none;" Color="Color.Success" Variant="Variant.Outlined" StartIcon="@Icons.Material.Outlined.DocumentScanner" Size="Size.Small">View</MudButton>
                                         <MudButton Class="ml-2" OnClick="()=>Edit(document)" Style="text-transform:none;" Color="Color.Warning" Variant="Variant.Outlined" StartIcon="@Icons.Material.Outlined.Edit" Size="Size.Small">Edit</MudButton>
+                                        <MudButton Class="ml-2" OnClick="()=>Trash(document)" Style="text-transform:none;" Color="Color.Primary" Variant="Variant.Outlined" StartIcon="@Icons.Material.Outlined.Archive" Size="Size.Small">Archive</MudButton>
                                     </MudItem>
                                 </div>
                             </MudItem>
@@ -124,5 +140,59 @@
             LoadData();
         }
     }
-    
+    async void Trash(Document record)
+    {
+        bool? confirm = await dialogService.ShowMessageBox(new MessageBoxOptions
+            {
+                CancelText = "Cancel",
+                Title = $"Archive : {record.Title}",
+                Message = "Are you sure you want to archive this document?",
+                YesText = "Yes archive"
+            });
+        if (confirm.HasValue && confirm.Value)
+        {
+            var archive = documentArchiveService.GetAll()
+                                                .FirstOrDefault(x => x.DocumentId == record.Id);
+            if (archive is null)
+            {
+                archive = new DocumentArchive()
+                    {
+                        DocumentId = record.Id
+                    };
+                record.Status = Shared.Constants.Status.ARCHIVE;
+                record.Pages.ForEach(s =>
+                {
+                    fileSystemService.MoveFileToArchive(s.Path);
+                });
+                if (documentService.Save(record) && documentArchiveService.Save(archive))
+                {
+                    snackBar.Add("File moved to archive.", Severity.Success);
+                    NavManager.NavigateTo("documents/files", true);
+                }
+                else
+                {
+                    snackBar.Add("Failed to move file to archive.", Severity.Error);
+                }
+            }
+            else
+            {
+                archive.Status = 0;
+                record.Status = Shared.Constants.Status.ARCHIVE;
+                record.Pages.ForEach(s =>
+                {
+                    fileSystemService.MoveFileToArchive(s.Path);
+                });
+                if (documentService.Save(record) && documentArchiveService.Save(archive))
+                {
+                    snackBar.Add("File moved to archive.", Severity.Success);
+                    NavManager.NavigateTo("documents/files", true);
+                }
+                else
+                {
+                    snackBar.Add("Failed to move file to archive.", Severity.Error);
+                }
+            }
+        }
+    }
+
 }
