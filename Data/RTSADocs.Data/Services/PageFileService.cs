@@ -1,4 +1,6 @@
-﻿using RTSADocs.Data.DataAccess;
+﻿using Microsoft.EntityFrameworkCore;
+
+using RTSADocs.Data.DataAccess;
 
 using System;
 using System.Collections.Generic;
@@ -14,9 +16,9 @@ namespace RTSADocs.Data.Services
         public PageFileService(IRepository<PageFile> repository) : base(repository)
         {
         }
-        public bool IsCleanable(string fileName)
+        public Task<bool> IsCleanable(string fileName)
         {
-            return !GetAll().Any(f => f.Path.Contains(fileName));
+            return GetAll().AnyAsync(f => f.Path.Contains(fileName));
         }
     }
 }

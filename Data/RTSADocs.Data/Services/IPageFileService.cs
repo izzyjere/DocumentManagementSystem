@@ -2,6 +2,6 @@
 {
     public interface IPageFileService : ICrudService<PageFile>
     {
-        bool IsCleanable(string fileName);
+        Task<bool> IsCleanable(string fileName);
     }
 }
