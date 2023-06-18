@@ -1,0 +1,82 @@
+﻿@page "/register"
+@layout LoginLayout
+<MudText Typo="Typo.h4" GutterBottom="true">Sign Up</MudText>
+
+
+<!-- Heading for the Sign Up page -->
+
+<MudText>Already have an account? <MudLink Href="/login">Sign In</MudLink></MudText>
+<EditForm OnValidSubmit="Save" Model="@Model">
+    <DataAnnotationsValidator/>
+    <MudGrid Style="margin-top:30px" Spacing="1">
+        <MudItem xs="12" md="6">
+            <MudTextField Label="First Name" Variant="Variant.Outlined" @bind-Value="@Model.FirstName" For="()=>Model.FirstName"/>
+        </MudItem>
+        <MudItem xs="12" md="6">
+            <MudTextField Label="Last Name" Variant="Variant.Outlined" @bind-Value="@Model.LastName" For="()=>Model.LastName" />
+        </MudItem>
+        <MudItem xs="12" md="6">
+            <MudTextField Label="Email" InputType="InputType.Email" Variant="Variant.Outlined" @bind-Value="@Model.Email" For="()=>Model.Email" />
+        </MudItem>
+        <MudItem xs="12" md="6">
+            <MudTextField Label="User Name"  Variant="Variant.Outlined" @bind-Value="@Model.UserName" For="()=>Model.UserName" />
+        </MudItem>
+        <MudItem xs="12" md="6">
+            <MudTextField Label="Password" InputType="InputType.Password" Variant="Variant.Outlined" @bind-Value="@Model.Password" For="()=>Model.Password" />
+        </MudItem>
+        <MudItem xs="12" md="6">
+            <MudTextField Label="Confirm Password" InputType="InputType.Password" Variant="Variant.Outlined" @bind-Value="@Model.ConfirmPassword" For="()=>Model.ConfirmPassword" />
+        </MudItem>
+        <MudItem xs="12">
+            <MudButton Style="margin-top:30px" FullWidth Variant="Variant.Filled" Color="Color.Primary" ButtonType="ButtonType.Submit">Register</MudButton>
+        </MudItem>
+    </MudGrid>
+</EditForm>
+@code {
+    RegisterModel Model = new();
+    string Password { get; set; } // Represents the user's password
+    public bool AgreeToTerms { get; set; } // Indicates whether the user has agreed to the terms
+
+    bool PasswordVisibility; // Indicates whether the password is visible or hidden
+    InputType PasswordInput = InputType.Password; // Input type for the password field
+    string PasswordInputIcon = Icons.Material.Filled.VisibilityOff; // Icon for the password visibility toggle
+
+    async Task Save()
+    {
+        var result = await userService.CreateAsync(Model);
+        if (result.Succeeded)
+        {
+            var role = await roleService.GetRoleByNameAsync("RegistryClerk");
+            if(role is null)
+            {
+                await roleService.CreateAsync(new Role("RegistryClerk", "Registry Clerk"));
+            }else{}
+            await userService.AddUserToRoleAsync("RegistryClerk", Model.UserName);
+            snackBar.Add("User created successfully.", Severity.Success);
+            Model = new RegisterModel();
+        }
+        else
+        {
+            snackBar.Add(result.Message, Severity.Error);
+        }
+    }
+
+
+
+    void TogglePasswordVisibility()
+    {
+        // Toggles the password visibility and updates the input type and icon accordingly
+        if (PasswordVisibility)
+        {
+            PasswordVisibility = false;
+            PasswordInputIcon = Icons.Material.Filled.VisibilityOff;
+            PasswordInput = InputType.Password;
+        }
+        else
+        {
+            PasswordVisibility = true;
+            PasswordInputIcon = Icons.Material.Filled.Visibility;
+            PasswordInput = InputType.Text;
+        }
+    }
+}

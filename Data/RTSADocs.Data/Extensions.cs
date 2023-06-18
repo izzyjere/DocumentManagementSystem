@@ -1,12 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-
 using RTSADocs.Data.DataAccess;
 using RTSADocs.Data.Services;
 namespace RTSADocs.Data
 {
     public static class Extensions
     {
+ 
         private static IServiceCollection AddRepositories(this IServiceCollection services)
         {
             var modelTypes = typeof(Entity).Assembly.GetTypes()

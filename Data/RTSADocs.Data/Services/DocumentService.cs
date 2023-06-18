@@ -23,12 +23,15 @@ namespace RTSADocs.Data.Services
                                           .ThenInclude(c => c.FileStore)
                 .Where(d =>  d.Status!=Status.ARCHIVE && ( d.Code.Contains(query)||
                                              d.Description.Contains(query)||
-                                             d.Pages.Any(p=>p.FileName.Contains(query))||
+                                             d.Title.Contains(query)||
+                                             d.Pages.Any(p=>p.FileName.Contains(query)||
                                              d.Library.Name.Contains(query) ||
                                              d.Library.Code.Contains(query) ||
                                              d.SubmittedBy.Contains(query) ||
                                              d.Library.Cabinet.Code.Contains(query) ||
-                                             d.Library.Cabinet.Name.Contains(query)));
+                                             d.Library.Cabinet.FileStore.Name.Contains(query) ||
+                                             d.Library.Cabinet.FileStore.ShortName.Contains(query) ||
+                                             d.Library.Cabinet.Name.Contains(query))));
           
         }
     }

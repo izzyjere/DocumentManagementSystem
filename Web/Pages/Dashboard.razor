@@ -153,6 +153,7 @@
 
     void LoadData()
     {
+        searchContext = "Recent Uploads";
         recentDocuments = documentService.GetAll()
                                           .Include(d => d.Pages)
                                           .Include(d => d.Library)
@@ -171,6 +172,7 @@
         // Perform a search for documents based on the query string
         if (string.IsNullOrWhiteSpace(queryString))
         {
+           
             LoadData();
             return;
         }
