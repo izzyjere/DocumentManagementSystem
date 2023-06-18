@@ -18,17 +18,8 @@ namespace RTSADocs.Shared.Services
         Task<Result<MemoryStream>> ReadFileFromFileStore(string filePath, FileSource source); // Reads a file from the file store and returns it as a memory stream
         string ReadFileFromFileStoreAsBlob(string filePath, FileSource source); // Reads a file from the file store and returns it as a blob
         byte[] ReadFileFromFileStoreAsBytes(string path, FileSource source); // Reads a file from the file store and returns it as a byte array
-        Task<Result<string>> WriteFileToStore(MemoryStream memoryStream, string fileStore); // Writes a file to the file store from a memory stream and returns the path
-        Result DecryptFile(string filePath, FileSource source);
-        Result EncryptFile(string filePath, FileSource source);
-        Task FileStoreCleanUp();
-        Task<string> InitializeFileStore();
-        Result MoveFileFromArchive(string filePath);
-        Result MoveFileToArchive(string filePath);
-        Task<Result<MemoryStream>> ReadFileFromFileStore(string filePath, FileSource source);
-        string ReadFileFromFileStoreAsBlob(string filePath, FileSource source);
-        byte[] ReadFileFromFileStoreAsBytes(string path, FileSource source);
-        Task<Result<string>> WriteFileToStore(MemoryStream memoryStream, string fileStore);
+        Task<Result<string>> WriteFileToStore(MemoryStream memoryStream, string fileStore);// Writes a file to the file store from a memory stream and returns the path
+        Task FileStoreCleanUp();      
     }
 }
 

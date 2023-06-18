@@ -33,9 +33,8 @@ namespace RTSADocs.Services
             this.pageFileService=pageFileService;
             this.logger=logger;
         }
-
         // Initialize the file system by creating the main and archive directories if they don't exist
-        private void Init()
+      
         private void Init()  
         {
            
