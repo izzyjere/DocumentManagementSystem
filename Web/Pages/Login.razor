@@ -2,7 +2,7 @@
 @page "/login"
 @layout LoginLayout
 
-<EditForm Model="Model" OnValidSubmit="LoginAsync">
+<EditForm FormName="Login" Model="Model" OnValidSubmit="LoginAsync">
     <DataAnnotationsValidator />
 
     <MudText Typo="Typo.h4" GutterBottom="true">Sign In</MudText>
