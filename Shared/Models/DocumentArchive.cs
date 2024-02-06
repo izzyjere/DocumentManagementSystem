@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace DMS.Shared.Models
+﻿namespace DMS.Shared.Models
 {
     public class DocumentArchive : AuditableEntity
     {

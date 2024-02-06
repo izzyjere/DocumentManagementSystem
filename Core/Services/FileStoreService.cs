@@ -1,7 +1,5 @@
 ﻿global using DMS.Shared.Contracts;
 
-using Microsoft.EntityFrameworkCore;
-
 using DMS.Data.DataAccess;
 
 namespace DMS.Data.Services

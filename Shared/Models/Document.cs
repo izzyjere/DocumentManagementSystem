@@ -1,7 +1,6 @@
 ﻿global using DMS.Shared.Contracts;
 
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DMS.Shared.Models
 {

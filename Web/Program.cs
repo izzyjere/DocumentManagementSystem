@@ -11,7 +11,6 @@ using DMS.Services;
 using DMS.Shared.Services;
 
 using SimpleAuthentication;
-using Microsoft.Extensions.Options;
 
 internal class Program
 {
@@ -20,7 +19,7 @@ internal class Program
         var builder = WebApplication.CreateBuilder(args);
         var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new ArgumentNullException("ConnectionString");
         // Add services to the container.
-        builder.Services.AddRazorPages();
+        builder.Services.AddRazorComponents().AddInteractiveServerComponents();
         builder.Services.AddHangfire(t =>
         {
             t.UseSqlServerStorage(connectionString);
@@ -57,7 +56,6 @@ internal class Program
         app.MigrateDb();
         app.UseSimpleAuthentication();
         app.MapBlazorHub();
-        app.MapFallbackToPage("/_Host");
         app.UseHangfireDashboard();
         app.InitFileStoreCleaner();
         app.Run();

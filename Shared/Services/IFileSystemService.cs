@@ -1,7 +1,5 @@
 ﻿using DMS.Shared.DTOs;
 using DMS.Shared.Models;
-using System.IO;
-using System.Threading.Tasks;
 
 namespace DMS.Shared.Services
 {
