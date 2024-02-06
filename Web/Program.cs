@@ -21,7 +21,6 @@ builder.Services.AddHangfire(t =>
     t.UseSqlServerStorage(connectionString);
 });
 builder.Services.AddHangfireServer();
-builder.Services.AddServerSideBlazor();
 builder.Services.AddMudServices();
 builder.Services.AddSimpleAuthentication(userStoreOptions =>
 {
