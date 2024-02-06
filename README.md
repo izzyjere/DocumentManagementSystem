@@ -1,6 +1,5 @@
 # Document Management System
-System Concept for RTSA
+System Concept
 
-
-
-
+Requirements : NET 7 SDK
+Microsoft SQL Server
