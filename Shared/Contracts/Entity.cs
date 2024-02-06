@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace RTSADocs.Shared.Contracts
+namespace DMS.Shared.Contracts
 {
     public abstract class Entity : IEntity
     {

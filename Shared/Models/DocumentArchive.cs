@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RTSADocs.Shared.Models
+namespace DMS.Shared.Models
 {
     public class DocumentArchive : AuditableEntity
     {

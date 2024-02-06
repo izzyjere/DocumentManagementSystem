@@ -1,8 +1,8 @@
-﻿using RTSADocs.Data.Services;
+﻿using DMS.Data.Services;
 
 using SimpleAuthentication;
 
-namespace RTSADocs.Authentication
+namespace DMS.Authentication
 {
     public class CurrentUserService : ICurrentUserService
     {

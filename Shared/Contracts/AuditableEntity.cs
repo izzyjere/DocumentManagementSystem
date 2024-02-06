@@ -1,4 +1,4 @@
-﻿namespace RTSADocs.Shared.Contracts
+﻿namespace DMS.Shared.Contracts
 {
     public abstract class AuditableEntity : Entity, IAuditableEntity
     {

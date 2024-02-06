@@ -3,11 +3,11 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
-using RTSADocs.Shared.Services;
+using DMS.Shared.Services;
 
 using SimpleAuthentication;
 
-namespace RTSADocs
+namespace DMS
 {
     internal static class Extensions
     {

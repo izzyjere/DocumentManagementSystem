@@ -1,4 +1,4 @@
-﻿namespace RTSADocs.Shared.Constants
+﻿namespace DMS.Shared.Constants
 {
     public class ApiEndpoints
     {

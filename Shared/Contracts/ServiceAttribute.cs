@@ -1,4 +1,4 @@
-﻿namespace RTSADocs.Shared.Contracts
+﻿namespace DMS.Shared.Contracts
 {
     public class ServiceAttribute : Attribute
     {

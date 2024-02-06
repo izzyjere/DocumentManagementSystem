@@ -1,9 +1,9 @@
-﻿using RTSADocs.Shared.DTOs;
-using RTSADocs.Shared.Models;
+﻿using DMS.Shared.DTOs;
+using DMS.Shared.Models;
 using System.IO;
 using System.Threading.Tasks;
 
-namespace RTSADocs.Shared.Services
+namespace DMS.Shared.Services
 {
     public interface IFileSystemService
     {

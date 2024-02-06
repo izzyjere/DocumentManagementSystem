@@ -1,4 +1,4 @@
-﻿namespace RTSADocs.Shared.DTOs
+﻿namespace DMS.Shared.DTOs
 {
     public class Result<T> : Result
     {

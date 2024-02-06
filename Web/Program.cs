@@ -3,12 +3,12 @@ using Microsoft.EntityFrameworkCore;
 using Hangfire;
 using MudBlazor.Services;
 
-using RTSADocs;
-using RTSADocs.Authentication;
-using RTSADocs.Data;
-using RTSADocs.Data.Services;
-using RTSADocs.Services;
-using RTSADocs.Shared.Services;
+using DMS;
+using DMS.Authentication;
+using DMS.Data;
+using DMS.Data.Services;
+using DMS.Services;
+using DMS.Shared.Services;
 
 using SimpleAuthentication;
 using Microsoft.Extensions.Options;

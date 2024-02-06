@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace RTSADocs.Shared.Models
+namespace DMS.Shared.Models
 {
     public class FileStore : AuditableEntity
     {

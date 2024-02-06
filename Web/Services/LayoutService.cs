@@ -1,6 +1,6 @@
 ﻿using MudBlazor;
 
-namespace RTSADocs.Services
+namespace DMS.Services
 {
     public class LayoutService
     {

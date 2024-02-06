@@ -7,7 +7,7 @@ using SimpleAuthentication;
 
 using System.Security.Claims;
 
-namespace RTSADocs.Authentication
+namespace DMS.Authentication
 {
     public class CustomAuthenticationStateProvider : RevalidatingServerAuthenticationStateProvider
     {

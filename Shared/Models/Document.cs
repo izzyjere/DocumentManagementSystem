@@ -1,9 +1,9 @@
-﻿global using RTSADocs.Shared.Contracts;
+﻿global using DMS.Shared.Contracts;
 
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace RTSADocs.Shared.Models
+namespace DMS.Shared.Models
 {
     public class Document : AuditableEntity
     {

@@ -1,11 +1,11 @@
 ﻿using Humanizer;
 using Microsoft.VisualBasic;
 
-using RTSADocs.Data;
-using RTSADocs.Data.Services;
-using RTSADocs.Shared.DTOs;
-using RTSADocs.Shared.Models;
-using RTSADocs.Shared.Services;
+using DMS.Data;
+using DMS.Data.Services;
+using DMS.Shared.DTOs;
+using DMS.Shared.Models;
+using DMS.Shared.Services;
 using static MudBlazor.Colors;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 using System.Diagnostics.Contracts;
@@ -15,7 +15,7 @@ using System.IO;
 using System.Security.Policy;
 using Hangfire;
 
-namespace RTSADocs.Services
+namespace DMS.Services
 {
     internal class LocalFileSystemService : IFileSystemService
     {
